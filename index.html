@@ -987,6 +987,17 @@
           </span>
         </button>
 
+        <button id="btn-account" type="button" title="Sign In / Sync Stats"
+          class="glass-panel w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center text-pink-300 hover:border-pink-400/60 transition cursor-pointer overflow-hidden"
+          aria-label="Account and Cloud Sync">
+          <span id="account-avatar-slot" class="flex items-center justify-center w-full h-full">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </span>
+        </button>
+
         <button id="btn-stats" type="button" title="Statistics"
           class="glass-panel w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center text-slate-200 hover:text-amber-200 hover:border-amber-400/50 transition cursor-pointer"
           aria-label="View Statistics">
@@ -1182,14 +1193,101 @@
         <div id="end-secret-word" class="font-display text-2xl font-extrabold tracking-[0.28em] text-amber-300 pl-2">FLAME</div>
       </div>
 
-      <div class="flex gap-2">
-        <button id="btn-share-result" type="button"
-          class="flex-1 py-2.5 rounded-xl font-semibold text-sm bg-slate-800 hover:bg-slate-700 text-teal-200 border border-teal-400/40 transition cursor-pointer">
-          Copy Summary
+      <div class="flex flex-col gap-2">
+        <button id="btn-share-native" type="button"
+          class="w-full py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-pink-500 via-fuchsia-500 to-cyan-400 text-slate-950 hover:brightness-110 transition cursor-pointer flex items-center justify-center gap-2 shadow-[0_0_18px_rgba(255,42,133,0.4)]">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+          </svg>
+          <span>Share to Instagram &amp; Apps</span>
         </button>
-        <button id="btn-play-again" type="button"
-          class="flex-1 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 hover:from-amber-400 hover:to-yellow-400 transition cursor-pointer">
-          Play Again
+        <div class="flex gap-2">
+          <button id="btn-share-result" type="button"
+            class="flex-1 py-2 rounded-xl font-semibold text-xs bg-slate-800 hover:bg-slate-700 text-cyan-200 border border-cyan-400/40 transition cursor-pointer">
+            Copy Text
+          </button>
+          <button id="btn-download-card" type="button"
+            class="flex-1 py-2 rounded-xl font-semibold text-xs bg-slate-800 hover:bg-slate-700 text-pink-200 border border-pink-400/40 transition cursor-pointer">
+            Save Story Card
+          </button>
+          <button id="btn-play-again" type="button"
+            class="flex-1 py-2 rounded-xl font-bold text-xs bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 hover:brightness-110 transition cursor-pointer">
+            Play Again
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCOUNT & CLOUD SYNC MODAL (GOOGLE / FACEBOOK) -->
+  <div id="modal-account" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="account-title">
+    <div class="modal-card glass-panel cyber-hud rounded-2xl max-w-sm w-full p-5 sm:p-6 border border-cyan-400/35">
+      <div class="flex items-center justify-between mb-3">
+        <h2 id="account-title" class="font-display text-lg font-bold text-cyan-200 tracking-wide">Player Account</h2>
+        <button type="button" data-close-modal="modal-account" class="w-8 h-8 rounded-lg bg-slate-800/80 text-slate-300 hover:text-white flex items-center justify-center cursor-pointer" aria-label="Close">✕</button>
+      </div>
+
+      <!-- Signed-out view -->
+      <div id="auth-signed-out" class="space-y-3">
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Sign in to save your win streak, guess history, and stats across devices.
+        </p>
+
+        <button id="btn-google-login" type="button"
+          class="w-full py-2.5 px-4 rounded-xl bg-white text-slate-900 font-semibold text-sm flex items-center justify-center gap-2.5 hover:bg-slate-100 transition cursor-pointer">
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h6.47a5.54 5.54 0 0 1-2.4 3.63v3.02h3.88c2.27-2.09 3.54-5.17 3.54-8.89z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.07 7.94-2.91l-3.88-3.02c-1.07.72-2.45 1.15-4.06 1.15-3.12 0-5.77-2.11-6.72-4.96H1.28v3.12A12 12 0 0 0 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.26A7.22 7.22 0 0 1 4.9 12c0-.78.14-1.54.38-2.26V6.62H1.28A12 12 0 0 0 0 12c0 1.94.46 3.77 1.28 5.38l4-3.12z"/>
+            <path fill="#EA4335" d="M12 4.78c1.76 0 3.34.61 4.58 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.28 6.62l4 3.12c.95-2.85 3.6-4.96 6.72-4.96z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <button id="btn-facebook-login" type="button"
+          class="w-full py-2.5 px-4 rounded-xl bg-[#1877F2] text-white font-semibold text-sm flex items-center justify-center gap-2.5 hover:bg-[#166fe5] transition cursor-pointer">
+          <svg class="w-4 h-4 shrink-0 fill-current" viewBox="0 0 24 24">
+            <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
+          </svg>
+          <span>Continue with Facebook</span>
+        </button>
+
+        <div id="auth-config-notice" class="hidden p-2.5 rounded-xl bg-amber-950/60 border border-amber-400/40 text-[11px] text-amber-200 leading-relaxed">
+          To activate live Google/Facebook OAuth on GitHub Pages, paste your free Firebase Web App config into <code class="text-cyan-300">FIREBASE_CONFIG</code> in <code class="text-cyan-300">index.html</code> (see <code class="text-cyan-300">README.md</code>). Meanwhile, you can create a local profile below!
+        </div>
+
+        <div class="pt-2 border-t border-slate-700/60 space-y-2">
+          <label for="local-profile-input" class="block text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Or Quick Local Profile</label>
+          <div class="flex gap-2">
+            <input id="local-profile-input" type="text" maxlength="20" placeholder="Enter player handle..."
+              class="flex-1 px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400" />
+            <button id="btn-local-login" type="button"
+              class="px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-500/20 border border-cyan-400/55 text-cyan-200 hover:bg-cyan-500/35 transition cursor-pointer">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Signed-in view -->
+      <div id="auth-signed-in" class="hidden space-y-3 text-center">
+        <div class="flex flex-col items-center gap-2 py-2">
+          <div id="profile-avatar-lg" class="w-14 h-14 rounded-full border-2 border-cyan-400 bg-slate-900 flex items-center justify-center text-xl font-bold text-cyan-200 overflow-hidden"></div>
+          <div>
+            <div id="profile-name" class="font-bold text-base text-white">Player</div>
+            <div id="profile-provider" class="font-mono-cyber text-[11px] text-cyan-300/80">Local Profile</div>
+          </div>
+        </div>
+        <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-700/60 text-xs text-slate-300">
+          Stats are automatically saved under this profile.
+        </div>
+        <button id="btn-sign-out" type="button"
+          class="w-full py-2 rounded-xl text-xs font-semibold bg-pink-500/15 border border-pink-400/45 text-pink-200 hover:bg-pink-500/30 transition cursor-pointer">
+          Sign Out
         </button>
       </div>
     </div>
@@ -2390,10 +2488,50 @@
       /* ========================
          GAME STATE & PERSISTENCE
          ======================== */
+      /* ========================
+         OPTIONAL FIREBASE CLOUD AUTH CONFIG (GOOGLE & FACEBOOK)
+         Paste your Firebase Web App credentials here to enable live
+         Google & Facebook OAuth + Firestore cloud stat sync on GitHub Pages.
+         ======================== */
+      const FIREBASE_CONFIG = {
+        apiKey: 'AIzaSyCndcIPMYWOui1M3WqeVx3lyCBa4rvVNbA',
+        authDomain: 'cows-and-bulls-stats.firebaseapp.com',
+        projectId: 'cows-and-bulls-stats',
+        storageBucket: 'cows-and-bulls-stats.firebasestorage.app',
+        messagingSenderId: '994721789023',
+        appId: '1:994721789023:web:f945a57e976787213e17ea',
+        measurementId: 'G-2VPRNYMYEP'
+      };
+
       const MAX_GUESSES = 10;
       const WORD_LEN = 5;
       const MAX_HINTS = 3;
       const STORAGE_KEY = 'cow_bull_celestial_stats_v1';
+      const PROFILE_KEY = 'cow_bull_player_profile_v1';
+
+      let currentUser = loadLocalProfile();
+      let fbAuth = null;
+      let fbDb = null;
+
+      function loadLocalProfile() {
+        try {
+          const raw = localStorage.getItem(PROFILE_KEY);
+          return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function saveLocalProfile(profile) {
+        try {
+          if (profile) localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+          else localStorage.removeItem(PROFILE_KEY);
+        } catch (e) {}
+      }
+
+      function getActiveStorageKey() {
+        return currentUser && currentUser.uid ? `${STORAGE_KEY}_${currentUser.uid}` : STORAGE_KEY;
+      }
 
       const KB_ROWS = [
         ['Q','W','E','R','T','Y','U','I','O','P'],
@@ -2417,7 +2555,7 @@
       function loadStats() {
         const fallback = { played: 0, wins: 0, streak: 0, bestStreak: 0, dist: Array(MAX_GUESSES).fill(0) };
         try {
-          const raw = localStorage.getItem(STORAGE_KEY);
+          const raw = localStorage.getItem(getActiveStorageKey());
           if (!raw) return fallback;
           const parsed = JSON.parse(raw);
           if (!parsed || !Array.isArray(parsed.dist)) return fallback;
@@ -2431,9 +2569,132 @@
 
       function saveStats() {
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+          localStorage.setItem(getActiveStorageKey(), JSON.stringify(stats));
         } catch (e) {
           // Ignore storage errors in sandboxed iframes
+        }
+        if (fbDb && currentUser && currentUser.isCloud) {
+          try {
+            fbDb.collection('cows_bulls_stats').doc(currentUser.uid).set(stats, { merge: true }).catch(() => {});
+          } catch (e) {}
+        }
+      }
+
+      function loadScriptOnce(src) {
+        return new Promise((resolve, reject) => {
+          if (document.querySelector(`script[src="${src}"]`)) return resolve();
+          const sc = document.createElement('script');
+          sc.src = src;
+          sc.onload = resolve;
+          sc.onerror = reject;
+          document.head.appendChild(sc);
+        });
+      }
+
+      async function initFirebaseIfConfigured() {
+        if (!FIREBASE_CONFIG.apiKey || !FIREBASE_CONFIG.projectId) return false;
+        if (fbAuth) return true;
+        try {
+          await loadScriptOnce('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
+          await loadScriptOnce('https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js');
+          await loadScriptOnce('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js');
+          if (!window.firebase.apps.length) {
+            window.firebase.initializeApp(FIREBASE_CONFIG);
+          }
+          fbAuth = window.firebase.auth();
+          fbDb = window.firebase.firestore();
+          fbAuth.getRedirectResult().catch(() => {});
+          fbAuth.onAuthStateChanged(async (user) => {
+            if (user) {
+              const providerId = (user.providerData && user.providerData[0] && user.providerData[0].providerId) || 'cloud';
+              const providerLabel = providerId.includes('google') ? 'Google Account'
+                : providerId.includes('facebook') ? 'Facebook Account' : 'Cloud Account';
+              currentUser = {
+                uid: user.uid,
+                name: user.displayName || user.email || 'Player',
+                photoURL: user.photoURL || '',
+                provider: providerLabel,
+                isCloud: true
+              };
+              saveLocalProfile(currentUser);
+              try {
+                const snap = await fbDb.collection('cows_bulls_stats').doc(user.uid).get();
+                if (snap.exists) {
+                  const cloudData = snap.data();
+                  if (cloudData && Array.isArray(cloudData.dist)) {
+                    while (cloudData.dist.length < MAX_GUESSES) cloudData.dist.push(0);
+                    stats = cloudData;
+                    localStorage.setItem(getActiveStorageKey(), JSON.stringify(stats));
+                  }
+                } else {
+                  saveStats();
+                }
+              } catch (e) {}
+              updateAccountUI();
+              renderBoard();
+            }
+          });
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function updateAccountUI() {
+        const avatarSlot = document.getElementById('account-avatar-slot');
+        const outView = document.getElementById('auth-signed-out');
+        const inView = document.getElementById('auth-signed-in');
+        const nameEl = document.getElementById('profile-name');
+        const provEl = document.getElementById('profile-provider');
+        const avatarLg = document.getElementById('profile-avatar-lg');
+        if (!avatarSlot || !outView || !inView) return;
+
+        if (currentUser) {
+          outView.classList.add('hidden');
+          inView.classList.remove('hidden');
+          nameEl.textContent = currentUser.name;
+          provEl.textContent = currentUser.provider + (currentUser.isCloud ? ' • Cloud Synced' : ' • Saved Locally');
+          const initial = (currentUser.name || 'P').trim().charAt(0).toUpperCase();
+          if (currentUser.photoURL) {
+            avatarSlot.innerHTML = `<img src="${currentUser.photoURL}" alt="Profile" class="w-full h-full object-cover" />`;
+            avatarLg.innerHTML = `<img src="${currentUser.photoURL}" alt="Profile" class="w-full h-full object-cover" />`;
+          } else {
+            avatarSlot.innerHTML = `<span class="font-display text-xs font-bold text-cyan-200">${initial}</span>`;
+            avatarLg.textContent = initial;
+          }
+        } else {
+          outView.classList.remove('hidden');
+          inView.classList.add('hidden');
+          avatarSlot.innerHTML = `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+        }
+      }
+
+      async function handleOAuthLogin(providerName) {
+        const ready = await initFirebaseIfConfigured();
+        if (!ready || !fbAuth) {
+          const notice = document.getElementById('auth-config-notice');
+          if (notice) notice.classList.remove('hidden');
+          showToast('Add Firebase config for live OAuth — or use a local profile below', true);
+          return;
+        }
+        try {
+          const provider = providerName === 'google'
+            ? new window.firebase.auth.GoogleAuthProvider()
+            : new window.firebase.auth.FacebookAuthProvider();
+          await fbAuth.signInWithPopup(provider);
+          showToast(`Signed in with ${providerName === 'google' ? 'Google' : 'Facebook'}!`);
+          closeAllModals();
+        } catch (err) {
+          if (err && (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment')) {
+            try {
+              const provider = providerName === 'google'
+                ? new window.firebase.auth.GoogleAuthProvider()
+                : new window.firebase.auth.FacebookAuthProvider();
+              await fbAuth.signInWithRedirect(provider);
+              return;
+            } catch (e) {}
+          }
+          showToast('Sign-in cancelled or blocked by browser settings', true);
         }
       }
 
@@ -2984,10 +3245,176 @@
         spawnBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 'rgba(0, 240, 255, ALPHA)', 16);
       }
 
-      function copyShareSummary() {
+      function getShareText() {
         const header = `COWS & BULLS — ${state.won ? `${state.guesses.length}/${MAX_GUESSES}` : `X/${MAX_GUESSES}`}`;
         const rows = state.guesses.map((g, i) => `${i + 1}. 🐂 ${g.bulls}B  🐄 ${g.cows}C`);
-        const text = `${header}\n${rows.join('\n')}`;
+        const urlLine = (window.location.href && window.location.href.startsWith('http')) ? `\nPlay: ${window.location.href}` : '';
+        return `${header}\nHey Wordle! who's your daddy?\n${rows.join('\n')}${urlLine}`;
+      }
+
+      function generateStoryCardBlob() {
+        return new Promise((resolve) => {
+          const c = document.createElement('canvas');
+          c.width = 1080;
+          c.height = 1920;
+          const ctx = c.getContext('2d');
+
+          const bg = ctx.createLinearGradient(0, 0, 0, 1920);
+          bg.addColorStop(0, '#04010a');
+          bg.addColorStop(0.55, '#0b0420');
+          bg.addColorStop(1, '#1c0636');
+          ctx.fillStyle = bg;
+          ctx.fillRect(0, 0, 1080, 1920);
+
+          const horizonY = 1360;
+          ctx.strokeStyle = 'rgba(255, 42, 133, 0.45)';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(0, horizonY);
+          ctx.lineTo(1080, horizonY);
+          ctx.stroke();
+
+          for (let i = -8; i <= 8; i++) {
+            ctx.strokeStyle = i % 2 === 0 ? 'rgba(255, 42, 133, 0.22)' : 'rgba(0, 240, 255, 0.18)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(540 + i * 50, horizonY);
+            ctx.lineTo(540 + i * 240, 1920);
+            ctx.stroke();
+          }
+          for (let r = 1; r <= 8; r++) {
+            const y = horizonY + Math.pow(r / 8, 2.1) * (1920 - horizonY);
+            ctx.strokeStyle = 'rgba(255, 42, 133, 0.22)';
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(1080, y);
+            ctx.stroke();
+          }
+
+          ctx.fillStyle = 'rgba(10, 6, 26, 0.85)';
+          ctx.strokeStyle = 'rgba(0, 240, 255, 0.65)';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.roundRect(90, 180, 900, 1460, 36);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#ff5ca8';
+          ctx.font = '900 84px Orbitron, sans-serif';
+          ctx.fillText('COWS & BULLS', 540, 320);
+
+          ctx.fillStyle = '#67e8f9';
+          ctx.font = '600 34px "Share Tech Mono", monospace';
+          ctx.fillText("Hey Wordle! who's your daddy?", 540, 385);
+
+          const statusText = state.won
+            ? `CIPHER CRACKED IN ${state.guesses.length}/${MAX_GUESSES}`
+            : `VAULT SEALED • X/${MAX_GUESSES}`;
+          ctx.fillStyle = state.won ? '#39ff14' : '#ff2a85';
+          ctx.font = '700 44px Orbitron, sans-serif';
+          ctx.fillText(statusText, 540, 495);
+
+          ctx.fillStyle = '#cbd5e1';
+          ctx.font = '600 30px "Share Tech Mono", monospace';
+          ctx.fillText(
+            currentUser && currentUser.name
+              ? `PLAYER: ${currentUser.name.toUpperCase()}  •  STREAK: ${stats.streak}`
+              : `CURRENT STREAK: ${stats.streak}`,
+            540,
+            555
+          );
+
+          const startY = 640;
+          const rowGap = 86;
+          state.guesses.forEach((g, idx) => {
+            const y = startY + idx * rowGap;
+            ctx.fillStyle = 'rgba(20, 12, 46, 0.9)';
+            ctx.strokeStyle = g.bulls === WORD_LEN ? '#39ff14' : 'rgba(157, 78, 221, 0.45)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(160, y, 760, 68, 16);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '700 32px "Share Tech Mono", monospace';
+            ctx.fillText(`#${String(idx + 1).padStart(2, '0')}`, 195, y + 45);
+
+            for (let p = 0; p < WORD_LEN; p++) {
+              const px = 310 + p * 66;
+              ctx.fillStyle = p < g.bulls ? '#ff2a85' : p < g.bulls + g.cows ? '#00f0ff' : 'rgba(148, 163, 184, 0.22)';
+              ctx.beginPath();
+              ctx.roundRect(px, y + 16, 48, 36, 8);
+              ctx.fill();
+            }
+
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#ffd166';
+            ctx.font = '700 32px "Share Tech Mono", monospace';
+            ctx.fillText(`${g.bulls}B`, 775, y + 45);
+            ctx.fillStyle = '#67e8f9';
+            ctx.fillText(`${g.cows}C`, 885, y + 45);
+          });
+
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '600 28px "Share Tech Mono", monospace';
+          ctx.fillText('CAN YOU BEAT MY SCORE?', 540, 1580);
+
+          c.toBlob((blob) => resolve(blob), 'image/png');
+        });
+      }
+
+      async function shareToMobileApps() {
+        const text = getShareText();
+        try {
+          const blob = await generateStoryCardBlob();
+          if (blob && navigator.share) {
+            const file = new File([blob], 'cows-and-bulls-result.png', { type: 'image/png' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              await navigator.share({
+                title: 'Cows & Bulls',
+                text,
+                files: [file]
+              });
+              showToast('Shared result card!');
+              return;
+            }
+          }
+          if (navigator.share) {
+            await navigator.share({
+              title: 'Cows & Bulls',
+              text,
+              url: window.location.href && window.location.href.startsWith('http') ? window.location.href : undefined
+            });
+            showToast('Shared result!');
+            return;
+          }
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+        await downloadStoryCard();
+        copyShareSummary();
+      }
+
+      async function downloadStoryCard() {
+        const blob = await generateStoryCardBlob();
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'cows-and-bulls-story.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+        showToast('Saved 9:16 Story Card PNG!');
+      }
+
+      function copyShareSummary() {
+        const text = getShareText();
 
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(text)
@@ -3124,6 +3551,47 @@
 
       document.getElementById('btn-hint').addEventListener('click', useOracleHint);
 
+      document.getElementById('btn-account').addEventListener('click', () => {
+        updateAccountUI();
+        openModal('modal-account');
+      });
+      document.getElementById('btn-google-login').addEventListener('click', () => handleOAuthLogin('google'));
+      document.getElementById('btn-facebook-login').addEventListener('click', () => handleOAuthLogin('facebook'));
+      document.getElementById('btn-local-login').addEventListener('click', () => {
+        const inp = document.getElementById('local-profile-input');
+        const name = (inp ? inp.value : '').trim();
+        if (!name) {
+          showToast('Enter a player name first', true);
+          return;
+        }
+        currentUser = {
+          uid: 'local_' + name.toLowerCase().replace(/[^a-z0-9]/g, '_'),
+          name,
+          photoURL: '',
+          provider: 'Local Profile',
+          isCloud: false
+        };
+        saveLocalProfile(currentUser);
+        stats = loadStats();
+        updateAccountUI();
+        renderBoard();
+        showToast(`Signed in as ${name}`);
+        closeAllModals();
+      });
+      document.getElementById('btn-sign-out').addEventListener('click', async () => {
+        if (fbAuth && currentUser && currentUser.isCloud) {
+          try { await fbAuth.signOut(); } catch (e) {}
+        }
+        currentUser = null;
+        saveLocalProfile(null);
+        stats = loadStats();
+        updateAccountUI();
+        renderBoard();
+        showToast('Signed out');
+      });
+
+      document.getElementById('btn-share-native').addEventListener('click', shareToMobileApps);
+      document.getElementById('btn-download-card').addEventListener('click', downloadStoryCard);
       document.getElementById('btn-share-result').addEventListener('click', copyShareSummary);
       document.getElementById('btn-play-again').addEventListener('click', () => {
         SoundFX.markNote();
@@ -3173,6 +3641,8 @@
         renderFx();
         buildBoardDOM();
         buildKeyboardDOM();
+        updateAccountUI();
+        initFirebaseIfConfigured();
         startNewGame();
       };
     })();
