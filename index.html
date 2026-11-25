@@ -2,8 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>COWS &amp; BULLS // RETRO CYBER CIPHER</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#05020c" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>Cows &amp; Bulls</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -34,6 +39,14 @@
       color: #e9e4ff;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       overflow-x: hidden;
+      overscroll-behavior-y: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    img {
+      image-rendering: -webkit-optimize-contrast;
     }
 
     .font-display {
@@ -84,16 +97,22 @@
       pointer-events: none;
     }
 
+    button, .kb-key {
+      touch-action: manipulation;
+    }
+
     .app-shell {
       position: relative;
       z-index: 2;
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 12px 12px;
+      padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
       max-width: 760px;
+      width: 100%;
       margin: 0 auto;
     }
 
@@ -448,8 +467,10 @@
 
     .kb-key {
       flex: 1;
+      min-width: 0;
       max-width: 44px;
-      height: 40px;
+      height: 42px;
+      padding: 0 2px;
       border-radius: 7px;
       font-family: 'Share Tech Mono', monospace;
       font-weight: 700;
@@ -605,31 +626,307 @@
       transform: scale(1) translateY(0);
     }
 
+    /* Custom slim cyber scrollbar for mobile guess list */
+    #guess-board {
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 240, 255, 0.35) transparent;
+    }
+    #guess-board::-webkit-scrollbar {
+      width: 4px;
+    }
+    #guess-board::-webkit-scrollbar-thumb {
+      background: rgba(0, 240, 255, 0.35);
+      border-radius: 4px;
+    }
+
     @media (max-width: 480px) {
       .guess-row {
-        grid-template-columns: 16px repeat(5, minmax(32px, 42px)) 1fr;
-        gap: 4px;
+        grid-template-columns: 15px repeat(5, minmax(28px, 1fr)) auto;
+        gap: 3px;
         padding: 4px 5px;
       }
       .guess-tile {
-        font-size: 1.1rem;
+        max-width: 40px;
+        font-size: 1.05rem;
       }
       .verdict-box {
-        min-width: 90px;
+        min-width: 82px;
         gap: 3px;
       }
       .badge-pill {
         padding: 2px 5px;
-        font-size: 0.7rem;
+        font-size: 0.68rem;
+        gap: 2px;
       }
       .secret-slot {
         width: 38px;
-        height: 42px;
-        font-size: 1.2rem;
+        height: 40px;
+        font-size: 1.15rem;
+      }
+      .kb-row {
+        gap: 3px;
       }
       .kb-key {
-        height: 38px;
-        font-size: 0.86rem;
+        height: 42px;
+        font-size: 0.84rem;
+        border-radius: 6px;
+      }
+      .kb-key.wide {
+        flex: 1.45;
+        font-size: 0.68rem;
+      }
+    }
+
+    /* ========================
+       HIGH-RESOLUTION SCALING: 2K, 2.5K, 3K, 3.5K & 4K DISPLAYS
+       ======================== */
+    @media (min-width: 1920px) and (min-height: 980px) {
+      .app-shell {
+        max-width: 920px;
+        padding: 18px 24px 22px;
+      }
+      .secret-slot {
+        width: 54px;
+        height: 58px;
+        font-size: 1.75rem;
+        border-radius: 10px;
+      }
+      .guess-row {
+        grid-template-columns: 24px repeat(5, minmax(44px, 52px)) 1fr;
+        gap: 6px;
+        padding: 6px 10px;
+      }
+      .guess-tile {
+        max-width: 52px;
+        font-size: 1.45rem;
+        border-radius: 9px;
+      }
+      .verdict-box {
+        min-width: 112px;
+        gap: 6px;
+      }
+      .badge-pill {
+        padding: 4px 8px;
+        font-size: 0.88rem;
+      }
+      .kb-key {
+        max-width: 54px;
+        height: 48px;
+        font-size: 1.08rem;
+        border-radius: 9px;
+      }
+      .kb-key.wide {
+        max-width: 94px;
+        font-size: 0.9rem;
+      }
+      .kb-row {
+        gap: 7px;
+      }
+    }
+
+    /* 2K / 2.5K (2560x1440, 2560x1600) */
+    @media (min-width: 2400px) and (min-height: 1200px) {
+      html {
+        font-size: 19px;
+      }
+      .app-shell {
+        max-width: 1120px;
+        padding: 26px 32px 28px;
+      }
+      .secret-slot {
+        width: 64px;
+        height: 68px;
+        font-size: 2rem;
+        border-radius: 12px;
+      }
+      .guess-row {
+        grid-template-columns: 28px repeat(5, minmax(52px, 60px)) 1fr;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 12px;
+      }
+      .guess-tile {
+        max-width: 60px;
+        font-size: 1.65rem;
+        border-radius: 10px;
+        border-width: 2px;
+      }
+      .verdict-box {
+        min-width: 132px;
+        gap: 8px;
+      }
+      .badge-pill {
+        padding: 5px 10px;
+        font-size: 0.96rem;
+        gap: 6px;
+      }
+      .kb-key {
+        max-width: 66px;
+        height: 56px;
+        font-size: 1.2rem;
+        border-radius: 10px;
+      }
+      .kb-key.wide {
+        max-width: 114px;
+        font-size: 0.96rem;
+      }
+      .kb-row {
+        gap: 9px;
+      }
+      .modal-card {
+        max-width: 34rem;
+      }
+    }
+
+    /* 3K / 3.5K Ultrawide / 4K UHD (2880px - 3840x2160+) */
+    @media (min-width: 3200px) and (min-height: 1500px) {
+      html {
+        font-size: 23px;
+      }
+      .app-shell {
+        max-width: 1360px;
+        padding: 36px 40px 36px;
+      }
+      .secret-slot {
+        width: 78px;
+        height: 82px;
+        font-size: 2.35rem;
+        border-radius: 14px;
+        border-width: 2px;
+      }
+      .guess-row {
+        grid-template-columns: 32px repeat(5, minmax(62px, 72px)) 1fr;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 14px;
+      }
+      .guess-tile {
+        max-width: 72px;
+        font-size: 1.95rem;
+        border-radius: 12px;
+        border-width: 2px;
+      }
+      .verdict-box {
+        min-width: 156px;
+        gap: 10px;
+      }
+      .badge-pill {
+        padding: 6px 12px;
+        font-size: 1.05rem;
+        gap: 7px;
+      }
+      .kb-key {
+        max-width: 80px;
+        height: 68px;
+        font-size: 1.35rem;
+        border-radius: 12px;
+      }
+      .kb-key.wide {
+        max-width: 138px;
+        font-size: 1.05rem;
+      }
+      .kb-row {
+        gap: 11px;
+      }
+      .modal-card {
+        max-width: 40rem;
+      }
+    }
+
+    /* ========================
+       VERTICAL 9:16 PORTRAIT PHONE LAYOUT (ANDROID & APPLE iOS)
+       ======================== */
+    @media (orientation: portrait) and (max-width: 767px) {
+      html, body {
+        height: 100dvh;
+        overflow: hidden;
+      }
+      .app-shell {
+        height: 100dvh;
+        min-height: 100dvh;
+        max-height: 100dvh;
+        max-width: 540px;
+        justify-content: flex-start;
+        gap: 6px;
+        padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+      }
+      header, footer {
+        flex-shrink: 0;
+      }
+      .site-header {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding-bottom: 4px;
+      }
+      .header-brand {
+        width: 100%;
+        justify-content: center;
+        gap: 10px;
+      }
+      .header-brand > div:last-child {
+        min-width: 0;
+      }
+      .header-brand h1 {
+        font-size: 1.25rem;
+        line-height: 1.15;
+        white-space: nowrap;
+      }
+      .header-brand p {
+        font-size: 0.72rem;
+        line-height: 1.25;
+        margin-top: 2px;
+        white-space: nowrap;
+      }
+      .header-controls {
+        width: 100%;
+        justify-content: center;
+        gap: 8px;
+      }
+      .header-controls button {
+        height: 34px;
+        min-width: 38px;
+      }
+      .header-controls .new-btn-label {
+        display: inline !important;
+      }
+      main {
+        width: 100%;
+        flex: 1 1 auto;
+        min-height: 0;
+        justify-content: flex-start;
+        gap: 8px;
+        margin: 0;
+      }
+      #board-panel {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: hidden;
+      }
+      #guess-board {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none !important;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding-right: 2px;
+      }
+      .guess-row {
+        grid-template-columns: 16px repeat(5, minmax(30px, 1fr)) auto;
+        gap: 4px;
+        padding: 5px 6px;
+      }
+      .guess-tile {
+        max-width: 46px;
+        font-size: 1.12rem;
+      }
+      .kb-key {
+        height: clamp(40px, 5.4dvh, 48px);
+      }
+      footer {
+        font-size: 10px;
+        padding-top: 0;
       }
     }
   </style>
@@ -642,9 +939,9 @@
 
   <div class="app-shell">
     <!-- HEADER -->
-    <header class="w-full flex items-center justify-between gap-2 pb-2">
-      <div class="flex items-center gap-2.5">
-        <div class="relative flex items-center -space-x-2.5">
+    <header class="site-header w-full flex items-center justify-between gap-2 pb-1.5">
+      <div class="header-brand flex items-center gap-2.5 min-w-0">
+        <div class="header-emblems relative flex items-center gap-1.5 shrink-0">
           <img src="assets/bull.jpg"
                alt="Golden Bull Emblem"
                class="w-10 h-10 sm:w-11 sm:h-11 medallion-gold relative z-10" />
@@ -653,19 +950,19 @@
                class="w-10 h-10 sm:w-11 sm:h-11 medallion-teal relative z-0" />
         </div>
         <div>
-          <h1 class="font-display cyber-title text-lg sm:text-2xl font-black tracking-widest bg-gradient-to-r from-pink-400 via-amber-300 to-cyan-300 bg-clip-text text-transparent leading-tight">
+          <h1 class="font-display cyber-title text-base sm:text-2xl font-black tracking-wider sm:tracking-widest bg-gradient-to-r from-pink-400 via-amber-300 to-cyan-300 bg-clip-text text-transparent leading-tight">
             COWS &amp; BULLS
           </h1>
-          <p class="font-mono-cyber text-[11px] sm:text-xs text-cyan-300/90 tracking-wider">
+          <p class="font-mono-cyber text-[10px] sm:text-xs text-cyan-300/90 tracking-normal sm:tracking-wider">
             Hey Wordle! who&rsquo;s your daddy?
           </p>
 
         </div>
       </div>
 
-      <div class="flex items-center gap-1.5">
+      <div class="header-controls flex items-center gap-1.5 shrink-0">
         <button id="btn-music" type="button" title="Toggle Retro Background Music"
-          class="glass-panel w-9 h-9 rounded-xl flex items-center justify-center text-cyan-300 hover:border-cyan-400/60 transition cursor-pointer"
+          class="glass-panel w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center text-cyan-300 hover:border-cyan-400/60 transition cursor-pointer"
           aria-label="Toggle Background Music">
           <span id="icon-music-on">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -685,7 +982,7 @@
         </button>
 
         <button id="btn-sound" type="button" title="Toggle Sound"
-          class="glass-panel w-9 h-9 rounded-xl flex items-center justify-center text-amber-300 hover:border-amber-400/60 transition cursor-pointer"
+          class="glass-panel w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center text-amber-300 hover:border-amber-400/60 transition cursor-pointer"
           aria-label="Toggle Sound">
           <span id="icon-sound-on">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -704,7 +1001,7 @@
         </button>
 
         <button id="btn-stats" type="button" title="Statistics"
-          class="glass-panel w-9 h-9 rounded-xl flex items-center justify-center text-slate-200 hover:text-amber-200 hover:border-amber-400/50 transition cursor-pointer"
+          class="glass-panel w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center text-slate-200 hover:text-amber-200 hover:border-amber-400/50 transition cursor-pointer"
           aria-label="View Statistics">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="20" x2="18" y2="10"></line>
@@ -714,7 +1011,7 @@
         </button>
 
         <button id="btn-help" type="button" title="How to Play"
-          class="glass-panel w-9 h-9 rounded-xl flex items-center justify-center text-slate-200 hover:text-teal-200 hover:border-teal-400/50 transition cursor-pointer"
+          class="glass-panel w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center text-slate-200 hover:text-teal-200 hover:border-teal-400/50 transition cursor-pointer"
           aria-label="How to Play">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
@@ -724,12 +1021,12 @@
         </button>
 
         <button id="btn-new-game" type="button" title="New Cipher"
-          class="font-mono-cyber px-3 h-9 rounded-lg text-xs font-bold bg-pink-500/20 border border-pink-400/60 text-pink-200 hover:bg-pink-500/35 hover:border-pink-300 shadow-[0_0_12px_rgba(255,42,133,0.25)] transition cursor-pointer flex items-center gap-1.5">
+          class="font-mono-cyber px-2 sm:px-3 h-8 sm:h-9 rounded-lg text-xs font-bold bg-pink-500/20 border border-pink-400/60 text-pink-200 hover:bg-pink-500/35 hover:border-pink-300 shadow-[0_0_12px_rgba(255,42,133,0.25)] transition cursor-pointer flex items-center gap-1.5">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="23 4 23 10 17 10"></polyline>
             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
           </svg>
-          <span class="hidden sm:inline">New</span>
+          <span class="new-btn-label hidden sm:inline">New</span>
         </button>
       </div>
     </header>
@@ -787,7 +1084,7 @@
       </section>
 
       <!-- 5x5 GUESS BOARD WITH BESIDE-ROW BULLS & COWS -->
-      <section class="w-full glass-panel cyber-hud rounded-xl p-2 sm:p-2.5">
+      <section id="board-panel" class="w-full glass-panel cyber-hud rounded-xl p-2 sm:p-2.5 flex flex-col">
         <div class="flex items-center justify-between px-2 pb-2 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
           <span class="font-mono-cyber text-cyan-300/80">EXEC_LOG // 10 ATTEMPTS</span>
           <span class="font-mono-cyber text-pink-300/80 pr-1">BULLS &amp; COWS</span>
@@ -827,7 +1124,7 @@
 
     <!-- FOOTER TIP -->
     <footer class="w-full text-center text-[11px] text-slate-500 pt-1">
-      Tip: Right-click any keyboard letter (or toggle <strong class="text-slate-400">Note Marker</strong>) to track eliminated letters, Cows, or Bulls.
+      Tip: Toggle <strong class="text-slate-400">Note Marker</strong> (or right-click keys) to mark eliminated letters, Cows, or Bulls.
     </footer>
   </div>
 
@@ -1962,7 +2259,11 @@
       let animFrameId = null;
 
       function resizeCanvas() {
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const rawDpr = window.devicePixelRatio || 1;
+        // Native 4K / Super-Retina clarity on Android & Apple phones (up to 4x DPR) and 4K desktop
+        const isMobilePortrait = window.innerWidth < 768 && window.innerHeight > window.innerWidth;
+        const maxDpr = isMobilePortrait ? 4 : (window.innerWidth >= 2560 ? 2 : 3);
+        const dpr = Math.min(rawDpr, maxDpr);
         fxCanvas.width = Math.floor(window.innerWidth * dpr);
         fxCanvas.height = Math.floor(window.innerHeight * dpr);
         fxCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -2030,10 +2331,10 @@
         fxCtx.lineTo(w, horizonY);
         fxCtx.stroke();
 
-        // Perspective receding vertical lines
+        // Perspective receding vertical lines (scales cleanly from mobile to 4K)
         const centerX = w / 2;
-        const cols = 14;
-        fxCtx.lineWidth = 1;
+        const cols = Math.min(28, Math.max(12, Math.round(w / 95)));
+        fxCtx.lineWidth = w >= 2560 ? 1.5 : 1;
         for (let i = -cols; i <= cols; i++) {
           const ratio = i / cols;
           const topX = centerX + ratio * (w * 0.28);
@@ -2048,7 +2349,7 @@
         }
 
         // Scrolling horizontal perspective lines
-        const rows = 9;
+        const rows = h >= 1400 ? 13 : 9;
         for (let r = 0; r < rows; r++) {
           const t = ((r + gridOffset) / rows);
           const y = horizonY + Math.pow(t, 2.2) * gridH;
@@ -2069,8 +2370,9 @@
 
         drawSynthwaveGrid(w, h);
 
-        // Subtle falling cyber hex motes
-        fxCtx.font = '11px "Share Tech Mono", monospace';
+        // Subtle falling cyber hex motes (scales for 2K-4K)
+        const glyphPx = w >= 3200 ? 16 : w >= 2400 ? 14 : 11;
+        fxCtx.font = `${glyphPx}px "Share Tech Mono", monospace`;
         for (let i = 0; i < embers.length; i++) {
           const p = embers[i];
           p.y += p.vy;
@@ -2358,6 +2660,14 @@
               tile.className = 'guess-tile';
             }
             verdictEl.innerHTML = `<span class="text-[11px] text-slate-600 pr-1">—</span>`;
+          }
+        }
+
+        // Keep the active row smoothly scrolled into view on mobile screens
+        if (!state.gameOver) {
+          const activeRowEl = boardEl.querySelector(`.guess-row[data-row="${activeIdx}"]`);
+          if (activeRowEl && window.innerWidth < 768 && typeof activeRowEl.scrollIntoView === 'function') {
+            activeRowEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           }
         }
 
@@ -2844,13 +3154,40 @@
       /* ========================
          EVENT LISTENERS & INIT
          ======================== */
+      let audioUnlocked = false;
       function unlockMusicOnGesture() {
-        RetroMusic.start();
-        window.removeEventListener('pointerdown', unlockMusicOnGesture);
-        window.removeEventListener('keydown', unlockMusicOnGesture);
+        if (audioUnlocked) return;
+        const c = SoundFX.getContext();
+        if (c) {
+          // Play a 1-sample silent buffer to reliably unlock iOS Safari Web Audio
+          try {
+            const silent = c.createBuffer(1, 1, 22050);
+            const src = c.createBufferSource();
+            src.buffer = silent;
+            src.connect(c.destination);
+            src.start(0);
+          } catch (e) {}
+          audioUnlocked = true;
+          RetroMusic.start();
+          window.removeEventListener('touchstart', unlockMusicOnGesture);
+          window.removeEventListener('pointerdown', unlockMusicOnGesture);
+          window.removeEventListener('click', unlockMusicOnGesture);
+          window.removeEventListener('keydown', unlockMusicOnGesture);
+        }
       }
-      window.addEventListener('pointerdown', unlockMusicOnGesture);
+      window.addEventListener('touchstart', unlockMusicOnGesture, { passive: true });
+      window.addEventListener('pointerdown', unlockMusicOnGesture, { passive: true });
+      window.addEventListener('click', unlockMusicOnGesture);
       window.addEventListener('keydown', unlockMusicOnGesture);
+
+      // Pause background trance music when mobile browser tab is backgrounded, resume on return
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          RetroMusic.stop();
+        } else if (audioUnlocked && RetroMusic.isEnabled() && !SoundFX.isMuted()) {
+          RetroMusic.start();
+        }
+      });
 
       document.getElementById('btn-music').addEventListener('click', () => {
         const isOn = RetroMusic.toggle();
