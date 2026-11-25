@@ -523,28 +523,6 @@
       box-shadow: 0 0 18px rgba(255, 42, 133, 0.65), 0 3px 0 rgba(68, 4, 34, 0.95);
     }
 
-    /* Player deduction note states on keyboard */
-    .kb-key.note-eliminated {
-      opacity: 0.28;
-      background: rgba(8, 4, 18, 0.6);
-      border-color: rgba(100, 116, 139, 0.2);
-      text-decoration: line-through;
-    }
-
-    .kb-key.note-cow {
-      background: linear-gradient(180deg, rgba(0, 240, 255, 0.3), rgba(0, 130, 160, 0.45));
-      border-color: var(--neon-cyan);
-      color: #ecfeff;
-      box-shadow: 0 0 12px rgba(0, 240, 255, 0.42), 0 3px 0 rgba(5, 0, 18, 0.92);
-    }
-
-    .kb-key.note-bull {
-      background: linear-gradient(180deg, rgba(255, 42, 133, 0.42), rgba(180, 24, 98, 0.55));
-      border-color: var(--neon-gold);
-      color: #fff7d6;
-      box-shadow: 0 0 14px rgba(255, 42, 133, 0.48), 0 3px 0 rgba(5, 0, 18, 0.92);
-    }
-
     .kb-key.tried-dot::after {
       content: '';
       position: absolute;
@@ -1104,37 +1082,15 @@
         <div id="validation-banner" class="hidden font-mono-cyber mt-2 text-center text-xs font-semibold text-pink-200 bg-pink-950/80 border border-pink-500/70 rounded-lg py-1.5 px-3 shadow-[0_0_14px_rgba(255,42,133,0.3)]" role="alert"></div>
       </section>
 
-      <!-- INTERACTIVE KEYBOARD + DEDUCTION MARKER BAR -->
-      <section class="w-full glass-panel cyber-hud rounded-xl p-2.5 sm:p-3 flex flex-col gap-2">
-        <div class="flex items-center justify-between gap-2 px-1">
-          <div class="flex items-center gap-1.5 text-[11px] text-slate-400">
-            <span id="mode-status-text">Type or tap letters to guess</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <button id="btn-mark-mode" type="button"
-              class="px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-slate-600/70 bg-slate-800/80 text-slate-300 hover:border-teal-400/60 hover:text-teal-200 transition cursor-pointer flex items-center gap-1.5"
-              title="Toggle Note Mode to mark letters on the keyboard as Eliminated, Cow, or Bull">
-              <span class="w-2 h-2 rounded-full bg-slate-400" id="mark-mode-dot"></span>
-              <span>Note Marker: <strong id="mark-mode-state">OFF</strong></span>
-            </button>
-            <button id="btn-clear-notes" type="button"
-              class="px-2 py-1 rounded-lg text-[11px] font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition cursor-pointer"
-              title="Clear all letter notes">
-              Clear
-            </button>
-          </div>
-        </div>
-
+      <!-- INTERACTIVE KEYBOARD -->
+      <section class="w-full glass-panel cyber-hud rounded-xl p-2 sm:p-2.5 flex flex-col">
         <div id="keyboard" class="flex flex-col gap-1.5 w-full" aria-label="On-screen keyboard">
           <!-- Keyboard rows rendered by JS -->
         </div>
       </section>
     </main>
 
-    <!-- FOOTER TIP -->
-    <footer class="w-full text-center text-[11px] text-slate-500 pt-1">
-      Tip: Toggle <strong class="text-slate-400">Note Marker</strong> (or right-click keys) to mark eliminated letters, Cows, or Bulls.
-    </footer>
+
   </div>
 
   <!-- HOW TO PLAY MODAL -->
@@ -1165,7 +1121,6 @@
           <div>If you guess <span class="text-white font-bold tracking-widest">FRAME</span> &rarr; <strong class="text-amber-300">4 Bulls</strong> (F, A, M, E in exact spots) &amp; <strong class="text-teal-300">0 Cows</strong>.</div>
           <div>If you guess <span class="text-white font-bold tracking-widest">LEMON</span> &rarr; <strong class="text-amber-300">0 Bulls</strong> &amp; <strong class="text-teal-300">3 Cows</strong> (L, E, M exist in other spots).</div>
         </div>
-        <p class="text-xs text-slate-400">Use <strong class="text-slate-200">Note Marker</strong> or right-click keys on the keyboard to color-code your deductions as you narrow down the cipher.</p>
       </div>
       <button type="button" data-close-modal="modal-help"
         class="mt-4 w-full py-2.5 rounded-xl font-semibold text-sm bg-gradient-to-r from-amber-500 to-yellow-600 text-slate-950 hover:from-amber-400 hover:to-yellow-500 transition cursor-pointer">
@@ -2456,8 +2411,6 @@
         animating: false,
         hintsUsed: 0,
         hintLetters: [],
-        markMode: false,
-        keyNotes: {},        // letter -> 'eliminated' | 'cow' | 'bull'
         triedLetters: new Set()
       };
 
@@ -2606,12 +2559,6 @@
             }
 
             btn.addEventListener('click', () => handleKeyPress(key));
-            if (key.length === 1) {
-              btn.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                cycleKeyNote(key);
-              });
-            }
             rowEl.appendChild(btn);
           });
           keyboardEl.appendChild(rowEl);
@@ -2693,14 +2640,7 @@
         keys.forEach(btn => {
           const k = btn.dataset.key;
           if (k.length !== 1) return;
-          btn.classList.remove('note-eliminated', 'note-cow', 'note-bull', 'tried-dot');
-          if (state.triedLetters.has(k)) {
-            btn.classList.add('tried-dot');
-          }
-          const note = state.keyNotes[k];
-          if (note === 'eliminated') btn.classList.add('note-eliminated');
-          else if (note === 'cow') btn.classList.add('note-cow');
-          else if (note === 'bull') btn.classList.add('note-bull');
+          btn.classList.toggle('tried-dot', state.triedLetters.has(k));
         });
       }
 
@@ -2749,8 +2689,6 @@
           animating: false,
           hintsUsed: 0,
           hintLetters: [],
-          markMode: false,
-          keyNotes: {},
           triedLetters: new Set()
         };
 
@@ -2762,37 +2700,8 @@
         hintBannerEl.classList.add('hidden');
         hintBannerEl.textContent = '';
         clearValidationError();
-        updateMarkModeUI();
         renderBoard();
         renderKeyboardNotes();
-      }
-
-      function cycleKeyNote(letter) {
-        const order = [undefined, 'eliminated', 'cow', 'bull'];
-        const cur = state.keyNotes[letter];
-        const next = order[(order.indexOf(cur) + 1) % order.length];
-        if (next) state.keyNotes[letter] = next;
-        else delete state.keyNotes[letter];
-        SoundFX.markNote();
-        renderKeyboardNotes();
-      }
-
-      function updateMarkModeUI() {
-        const dot = document.getElementById('mark-mode-dot');
-        const label = document.getElementById('mark-mode-state');
-        const btn = document.getElementById('btn-mark-mode');
-        const status = document.getElementById('mode-status-text');
-        if (state.markMode) {
-          dot.className = 'w-2 h-2 rounded-full bg-teal-400 animate-pulse';
-          label.textContent = 'ON';
-          btn.classList.add('border-teal-400/70', 'bg-teal-950/60', 'text-teal-200');
-          status.textContent = 'Tap keys to cycle: Out → Cow → Bull';
-        } else {
-          dot.className = 'w-2 h-2 rounded-full bg-slate-400';
-          label.textContent = 'OFF';
-          btn.classList.remove('border-teal-400/70', 'bg-teal-950/60', 'text-teal-200');
-          status.textContent = 'Type or tap letters to guess';
-        }
       }
 
       function flashKeyboardKey(key) {
@@ -2839,10 +2748,6 @@
         }
 
         if (/^[A-Z]$/.test(key)) {
-          if (state.markMode) {
-            cycleKeyNote(key);
-            return;
-          }
           if (state.currentInput.length < WORD_LEN) {
             clearValidationError();
             const col = state.currentInput.length;
@@ -3048,19 +2953,13 @@
 
       function useOracleHint() {
         if (state.gameOver || state.hintsUsed >= MAX_HINTS || state.animating) return;
-        // Pick an unrevealed letter from the secret word (preferring ones not already marked as Bull)
+        // Pick an unrevealed letter from the secret word
         const unrevealed = state.secret.split('').filter(ch => !state.hintLetters.includes(ch));
-        const preferred = unrevealed.filter(ch => state.keyNotes[ch] !== 'bull');
-        const pool = preferred.length ? preferred : unrevealed;
-        if (!pool.length) return;
+        if (!unrevealed.length) return;
 
-        const chosen = pool[Math.floor(Math.random() * pool.length)];
+        const chosen = unrevealed[Math.floor(Math.random() * unrevealed.length)];
         state.hintsUsed++;
         state.hintLetters.push(chosen);
-        if (!state.keyNotes[chosen]) {
-          state.keyNotes[chosen] = 'cow';
-        }
-        renderKeyboardNotes();
 
         const remaining = MAX_HINTS - state.hintsUsed;
         if (remaining <= 0) {
@@ -3225,19 +3124,6 @@
 
       document.getElementById('btn-hint').addEventListener('click', useOracleHint);
 
-      document.getElementById('btn-mark-mode').addEventListener('click', () => {
-        state.markMode = !state.markMode;
-        SoundFX.markNote();
-        updateMarkModeUI();
-      });
-
-      document.getElementById('btn-clear-notes').addEventListener('click', () => {
-        state.keyNotes = {};
-        SoundFX.backspace();
-        renderKeyboardNotes();
-        showToast('Letter notes cleared');
-      });
-
       document.getElementById('btn-share-result').addEventListener('click', copyShareSummary);
       document.getElementById('btn-play-again').addEventListener('click', () => {
         SoundFX.markNote();
@@ -3271,10 +3157,6 @@
           e.preventDefault();
           handleKeyPress('BACK');
         } else if (/^[A-Z]$/.test(k)) {
-          if (state.markMode) {
-            state.markMode = false;
-            updateMarkModeUI();
-          }
           handleKeyPress(k);
         }
       });
