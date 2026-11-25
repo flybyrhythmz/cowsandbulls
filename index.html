@@ -1,0 +1,2953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>COWS &amp; BULLS // RETRO CYBER CIPHER</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-void: #05020c;
+      --bg-panel: rgba(10, 6, 24, 0.84);
+      --neon-pink: #ff2a85;
+      --neon-gold: #ffb800;
+      --neon-cyan: #00f0ff;
+      --neon-purple: #9d4edd;
+      --neon-green: #39ff14;
+      --border-cyber: rgba(0, 240, 255, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background-color: var(--bg-void);
+      color: #e9e4ff;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .font-display {
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .font-mono-cyber {
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    /* Synthwave horizon backdrop */
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 42% at 50% 0%, rgba(157, 78, 221, 0.22), transparent 65%),
+        radial-gradient(ellipse 55% 40% at 15% 25%, rgba(255, 42, 133, 0.14), transparent 60%),
+        radial-gradient(ellipse 55% 40% at 85% 25%, rgba(0, 240, 255, 0.12), transparent 60%),
+        radial-gradient(ellipse 90% 35% at 50% 100%, rgba(255, 42, 133, 0.22), transparent 72%),
+        linear-gradient(180deg, #04010a 0%, #090418 52%, #120524 100%);
+      pointer-events: none;
+    }
+
+    /* Retro CRT scanlines & subtle phosphor vignette */
+    .crt-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.16) 0px,
+          rgba(0, 0, 0, 0.16) 1px,
+          transparent 1px,
+          transparent 3px
+        ),
+        radial-gradient(circle at center, transparent 58%, rgba(2, 0, 10, 0.55) 100%);
+    }
+
+    #fx-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .app-shell {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px 12px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    /* Retro-Cyberpunk HUD panels with glowing corner accents */
+    .glass-panel {
+      background: var(--bg-panel);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 240, 255, 0.22);
+      box-shadow:
+        0 0 24px rgba(157, 78, 221, 0.12),
+        0 12px 36px rgba(0, 0, 0, 0.65),
+        inset 0 1px 0 rgba(0, 240, 255, 0.16);
+      position: relative;
+    }
+
+    .cyber-hud::before,
+    .cyber-hud::after {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      pointer-events: none;
+    }
+
+    .cyber-hud::before {
+      top: -1px;
+      left: -1px;
+      border-top: 2px solid var(--neon-cyan);
+      border-left: 2px solid var(--neon-cyan);
+      border-top-left-radius: 12px;
+    }
+
+    .cyber-hud::after {
+      bottom: -1px;
+      right: -1px;
+      border-bottom: 2px solid var(--neon-pink);
+      border-right: 2px solid var(--neon-pink);
+      border-bottom-right-radius: 12px;
+    }
+
+    /* Neon Title Glitch Shimmer */
+    .cyber-title {
+      text-shadow:
+        0 0 12px rgba(255, 42, 133, 0.65),
+        0 0 28px rgba(0, 240, 255, 0.35);
+    }
+
+    /* Neon Emblem Frames */
+    .medallion-gold {
+      border-radius: 12px;
+      border: 1.5px solid rgba(255, 42, 133, 0.85);
+      box-shadow: 0 0 14px rgba(255, 42, 133, 0.5), inset 0 0 8px rgba(255, 184, 0, 0.3);
+      object-fit: cover;
+    }
+
+    .medallion-teal {
+      border-radius: 12px;
+      border: 1.5px solid rgba(0, 240, 255, 0.85);
+      box-shadow: 0 0 14px rgba(0, 240, 255, 0.5), inset 0 0 8px rgba(0, 240, 255, 0.25);
+      object-fit: cover;
+    }
+
+    /* Secret 5-letter encrypted mainframe slots */
+    .secret-slot {
+      width: 44px;
+      height: 46px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Share Tech Mono', monospace;
+      font-weight: 700;
+      font-size: 1.45rem;
+      background: linear-gradient(160deg, rgba(16, 8, 38, 0.96), rgba(8, 4, 20, 0.96));
+      border: 1.5px solid rgba(255, 42, 133, 0.5);
+      color: rgba(0, 240, 255, 0.78);
+      text-shadow: 0 0 8px rgba(0, 240, 255, 0.65);
+      box-shadow: inset 0 0 14px rgba(255, 42, 133, 0.16), 0 0 14px rgba(255, 42, 133, 0.16);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s, box-shadow 0.35s, color 0.35s;
+    }
+
+    .secret-slot::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(115deg, transparent 32%, rgba(0, 240, 255, 0.22) 50%, transparent 68%);
+      transform: translateX(-130%);
+      animation: cyberSweep 3.8s infinite ease-in-out;
+    }
+
+    .secret-slot.revealed-win {
+      background: linear-gradient(145deg, #062c12, #0d5e26);
+      border-color: var(--neon-green);
+      color: #d9ffd0;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.95);
+      box-shadow: 0 0 24px rgba(57, 255, 20, 0.55), inset 0 0 10px rgba(57, 255, 20, 0.3);
+      animation: unlockFlip 0.58s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .secret-slot.revealed-loss {
+      background: linear-gradient(145deg, #35081f, #6e0d3d);
+      border-color: var(--neon-pink);
+      color: #ffd6e8;
+      text-shadow: 0 0 10px rgba(255, 42, 133, 0.9);
+      box-shadow: 0 0 20px rgba(255, 42, 133, 0.5);
+      animation: unlockFlip 0.58s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes cyberSweep {
+      0%, 62% { transform: translateX(-130%); }
+      100% { transform: translateX(130%); }
+    }
+
+    @keyframes unlockFlip {
+      0% { transform: rotateX(0deg) scale(1); }
+      45% { transform: rotateX(90deg) scale(1.14); }
+      100% { transform: rotateX(0deg) scale(1); }
+    }
+
+    /* Guess Row & Focused Spotlight */
+    .guess-row {
+      display: grid;
+      grid-template-columns: 18px repeat(5, minmax(32px, 42px)) 1fr;
+      gap: 4px;
+      align-items: center;
+      padding: 4px 6px;
+      border-radius: 10px;
+      border: 1px solid rgba(157, 78, 221, 0.14);
+      position: relative;
+      overflow: hidden;
+      opacity: 0.48;
+      transition: opacity 0.28s ease, background 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+    }
+
+    .guess-row.active-row {
+      opacity: 1;
+      background: linear-gradient(90deg, rgba(0, 240, 255, 0.10), rgba(255, 42, 133, 0.08));
+      border-color: rgba(0, 240, 255, 0.72);
+      box-shadow:
+        0 0 18px rgba(0, 240, 255, 0.22),
+        inset 0 0 14px rgba(0, 240, 255, 0.08);
+    }
+
+    .guess-row.submitted-row {
+      opacity: 0.94;
+      background: rgba(12, 7, 28, 0.72);
+      border-color: rgba(157, 78, 221, 0.28);
+    }
+
+    .guess-row.winning-row {
+      opacity: 1;
+      background: linear-gradient(90deg, rgba(57, 255, 20, 0.16), rgba(0, 240, 255, 0.10));
+      border-color: rgba(57, 255, 20, 0.85);
+      box-shadow: 0 0 26px rgba(57, 255, 20, 0.35);
+    }
+
+    /* Focused laser scanline sweeping across a row on submit */
+    .row-scanner {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -20%;
+      width: 24%;
+      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.55), rgba(255, 42, 133, 0.55), transparent);
+      filter: blur(2px);
+      pointer-events: none;
+      animation: laserScan 0.52s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      z-index: 5;
+    }
+
+    @keyframes laserScan {
+      0% { left: -24%; opacity: 0.95; }
+      100% { left: 108%; opacity: 0; }
+    }
+
+    .guess-tile {
+      aspect-ratio: 1 / 0.96;
+      width: 100%;
+      max-width: 42px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Share Tech Mono', monospace;
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: 0.03em;
+      background: rgba(7, 4, 18, 0.9);
+      border: 1.5px solid rgba(157, 78, 221, 0.26);
+      color: #f4f2ff;
+      user-select: none;
+      position: relative;
+      transition: border-color 0.16s, background 0.18s, box-shadow 0.18s, transform 0.14s, color 0.16s;
+    }
+
+    .guess-tile.filled {
+      border-color: rgba(0, 240, 255, 0.85);
+      background: linear-gradient(160deg, rgba(16, 22, 48, 0.96), rgba(8, 6, 24, 0.98));
+      color: #a5f3fc;
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.28), inset 0 0 8px rgba(0, 240, 255, 0.14);
+      animation: tilePop 0.17s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .guess-tile.cursor-focus {
+      border-color: var(--neon-pink);
+      box-shadow: 0 0 0 1.5px rgba(255, 42, 133, 0.45), inset 0 0 12px rgba(255, 42, 133, 0.2);
+    }
+
+    .guess-tile.cursor-focus::after {
+      content: '_';
+      color: var(--neon-pink);
+      text-shadow: 0 0 8px var(--neon-pink);
+      animation: crtBlink 0.85s steps(2, start) infinite;
+    }
+
+    @keyframes crtBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .guess-tile.scrambling {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      background: rgba(0, 240, 255, 0.18);
+      text-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    .guess-tile.committed {
+      border-color: rgba(157, 78, 221, 0.48);
+      background: linear-gradient(160deg, rgba(22, 12, 44, 0.94), rgba(10, 5, 22, 0.98));
+      color: #f3e8ff;
+      text-shadow: 0 0 6px rgba(192, 132, 252, 0.45);
+    }
+
+    .guess-tile.all-bulls {
+      border-color: var(--neon-green);
+      background: linear-gradient(145deg, #073616, #0e6b2c);
+      color: #dcffd6;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.95);
+      box-shadow: 0 0 16px rgba(57, 255, 20, 0.55);
+    }
+
+    .guess-tile.flip-anim {
+      animation: tileLockPulse 0.36s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes tilePop {
+      0% { transform: scale(0.84); }
+      55% { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes tileLockPulse {
+      0% { transform: scale(1.12); filter: brightness(1.6); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+
+    /* Chromatic Glitch Shake for invalid/US-only words */
+    @keyframes glitchShake {
+      0%, 100% { transform: translateX(0); filter: none; }
+      15% { transform: translateX(-7px) skewX(-3deg); filter: drop-shadow(2px 0 #00f0ff) drop-shadow(-2px 0 #ff2a85); }
+      32% { transform: translateX(7px) skewX(3deg); filter: drop-shadow(-2px 0 #00f0ff) drop-shadow(2px 0 #ff2a85); }
+      48% { transform: translateX(-5px) skewX(-2deg); }
+      65% { transform: translateX(5px) skewX(2deg); }
+      82% { transform: translateX(-2px); }
+    }
+
+    .shake {
+      animation: glitchShake 0.42s ease-in-out;
+    }
+
+    .guess-row.error-row {
+      opacity: 1 !important;
+      background: rgba(255, 20, 85, 0.16) !important;
+      border-color: rgba(255, 42, 133, 0.92) !important;
+      box-shadow: 0 0 24px rgba(255, 42, 133, 0.38) !important;
+    }
+
+    .guess-row.error-row .guess-tile.filled {
+      border-color: #ff2a85;
+      color: #ffc2d9;
+      text-shadow: 0 0 8px rgba(255, 42, 133, 0.9);
+    }
+
+    /* Bull & Cow Verdict Panel beside each guess */
+    .verdict-box {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      min-width: 96px;
+      padding-left: 2px;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 6px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s;
+    }
+
+    .badge-bull {
+      background: rgba(255, 42, 133, 0.18);
+      border: 1px solid rgba(255, 42, 133, 0.78);
+      color: #ffd166;
+      text-shadow: 0 0 8px rgba(255, 184, 0, 0.75);
+      box-shadow: 0 0 12px rgba(255, 42, 133, 0.32);
+    }
+
+    .badge-cow {
+      background: rgba(0, 240, 255, 0.14);
+      border: 1px solid rgba(0, 240, 255, 0.72);
+      color: #a5f3fc;
+      text-shadow: 0 0 8px rgba(0, 240, 255, 0.75);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.28);
+    }
+
+    .badge-zero {
+      background: rgba(20, 14, 40, 0.65);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      color: #5b5478;
+      box-shadow: none;
+    }
+
+    .badge-pop {
+      animation: badgeBurst 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes badgeBurst {
+      0% { transform: scale(0.55); opacity: 0; filter: brightness(1.8); }
+      70% { transform: scale(1.18); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; filter: brightness(1); }
+    }
+
+    /* Retro-Cyberpunk Tactile Keyboard */
+    .kb-row {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      width: 100%;
+    }
+
+    .kb-key {
+      flex: 1;
+      max-width: 44px;
+      height: 40px;
+      border-radius: 7px;
+      font-family: 'Share Tech Mono', monospace;
+      font-weight: 700;
+      font-size: 0.96rem;
+      color: #d8d0ff;
+      background: linear-gradient(180deg, rgba(24, 14, 52, 0.94), rgba(10, 5, 26, 0.98));
+      border: 1px solid rgba(157, 78, 221, 0.42);
+      box-shadow: 0 3px 0 rgba(5, 0, 18, 0.92), inset 0 1px 0 rgba(0, 240, 255, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      transition: transform 0.07s, background 0.16s, border-color 0.16s, color 0.16s, opacity 0.16s, box-shadow 0.16s;
+    }
+
+    .kb-key:hover {
+      border-color: var(--neon-cyan);
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.32), 0 3px 0 rgba(5, 0, 18, 0.92);
+    }
+
+    .kb-key:active,
+    .kb-key.key-flash {
+      transform: translateY(2px) scale(0.96);
+      border-color: var(--neon-cyan);
+      background: rgba(0, 240, 255, 0.25);
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.65), 0 1px 0 rgba(5, 0, 18, 0.92);
+    }
+
+    .kb-key.wide {
+      flex: 1.55;
+      max-width: 78px;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+    }
+
+    .kb-key.enter-key {
+      background: linear-gradient(180deg, #ff2a85, #b51763);
+      border-color: rgba(255, 184, 0, 0.75);
+      color: #ffffff;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.65);
+      box-shadow: 0 0 14px rgba(255, 42, 133, 0.4), 0 3px 0 rgba(68, 4, 34, 0.95);
+    }
+
+    .kb-key.enter-key:hover {
+      background: linear-gradient(180deg, #ff4798, #d41c74);
+      box-shadow: 0 0 18px rgba(255, 42, 133, 0.65), 0 3px 0 rgba(68, 4, 34, 0.95);
+    }
+
+    /* Player deduction note states on keyboard */
+    .kb-key.note-eliminated {
+      opacity: 0.28;
+      background: rgba(8, 4, 18, 0.6);
+      border-color: rgba(100, 116, 139, 0.2);
+      text-decoration: line-through;
+    }
+
+    .kb-key.note-cow {
+      background: linear-gradient(180deg, rgba(0, 240, 255, 0.3), rgba(0, 130, 160, 0.45));
+      border-color: var(--neon-cyan);
+      color: #ecfeff;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.42), 0 3px 0 rgba(5, 0, 18, 0.92);
+    }
+
+    .kb-key.note-bull {
+      background: linear-gradient(180deg, rgba(255, 42, 133, 0.42), rgba(180, 24, 98, 0.55));
+      border-color: var(--neon-gold);
+      color: #fff7d6;
+      box-shadow: 0 0 14px rgba(255, 42, 133, 0.48), 0 3px 0 rgba(5, 0, 18, 0.92);
+    }
+
+    .kb-key.tried-dot::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 4px;
+      height: 4px;
+      border-radius: 1px;
+      background: rgba(0, 240, 255, 0.65);
+    }
+
+    /* Toast notification */
+    #toast-container {
+      position: fixed;
+      top: 68px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 60;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .toast-msg {
+      font-family: 'Share Tech Mono', monospace;
+      background: rgba(8, 4, 22, 0.96);
+      border: 1px solid rgba(0, 240, 255, 0.72);
+      color: #a5f3fc;
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.25), 0 10px 28px rgba(0, 0, 0, 0.7);
+      animation: toastIn 0.22s ease-out;
+    }
+
+    .toast-msg.toast-error {
+      border-color: rgba(255, 42, 133, 0.9);
+      background: rgba(34, 4, 18, 0.97);
+      color: #ffc2d9;
+      box-shadow: 0 0 18px rgba(255, 42, 133, 0.42), 0 10px 28px rgba(0, 0, 0, 0.7);
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(-8px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Modal backdrop */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(4, 1, 14, 0.82);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      transform: scale(0.94) translateY(10px);
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .modal-backdrop.open .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    @media (max-width: 480px) {
+      .guess-row {
+        grid-template-columns: 16px repeat(5, minmax(32px, 42px)) 1fr;
+        gap: 4px;
+        padding: 4px 5px;
+      }
+      .guess-tile {
+        font-size: 1.1rem;
+      }
+      .verdict-box {
+        min-width: 90px;
+        gap: 3px;
+      }
+      .badge-pill {
+        padding: 2px 5px;
+        font-size: 0.7rem;
+      }
+      .secret-slot {
+        width: 38px;
+        height: 42px;
+        font-size: 1.2rem;
+      }
+      .kb-key {
+        height: 38px;
+        font-size: 0.86rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-bg"></div>
+  <canvas id="fx-canvas" aria-hidden="true"></canvas>
+  <div class="crt-overlay" aria-hidden="true"></div>
+  <div id="toast-container" aria-live="polite"></div>
+
+  <div class="app-shell">
+    <!-- HEADER -->
+    <header class="w-full flex items-center justify-between gap-2 pb-2">
+      <div class="flex items-center gap-2.5">
+        <div class="relative flex items-center -space-x-2.5">
+          <img src="assets/bull.jpg"
+               alt="Golden Bull Emblem"
+               class="w-10 h-10 sm:w-11 sm:h-11 medallion-gold relative z-10" />
+          <img src="assets/cow.jpg"
+               alt="Turquoise Cow Emblem"
+               class="w-10 h-10 sm:w-11 sm:h-11 medallion-teal relative z-0" />
+        </div>
+        <div>
+          <h1 class="font-display cyber-title text-lg sm:text-2xl font-black tracking-widest bg-gradient-to-r from-pink-400 via-amber-300 to-cyan-300 bg-clip-text text-transparent leading-tight">
+            COWS &amp; BULLS
+          </h1>
+          <p class="font-mono-cyber text-[11px] sm:text-xs text-cyan-300/90 tracking-wider">
+            Hey Wordle! who&rsquo;s your daddy?
+          </p>
+
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <button id="btn-music" type="button" title="Toggle Retro Background Music"
+          class="glass-panel w-9 h-9 rounded-xl flex items-center justify-center text-cyan-300 hover:border-cyan-400/60 transition cursor-pointer"
+          aria-label="Toggle Background Music">
+          <span id="icon-music-on">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18V5l12-2v13"></path>
+              <circle cx="6" cy="18" r="3"></circle>
+              <circle cx="18" cy="16" r="3"></circle>
+            </svg>
+          </span>
+          <span id="icon-music-off" class="hidden text-slate-500">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18V5l12-2v13"></path>
+              <circle cx="6" cy="18" r="3"></circle>
+              <circle cx="18" cy="16" r="3"></circle>
+              <line x1="2" y1="2" x2="22" y2="22"></line>
+            </svg>
+          </span>
+        </button>
+
+        <button id="btn-sound" type="button" title="Toggle Sound"
+          class="glass-panel w-9 h-9 rounded-xl flex items-center justify-center text-amber-300 hover:border-amber-400/60 transition cursor-pointer"
+          aria-label="Toggle Sound">
+          <span id="icon-sound-on">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+          </span>
+          <span id="icon-sound-off" class="hidden text-slate-500">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <line x1="23" y1="9" x2="17" y2="15"></line>
+              <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+          </span>
+        </button>
+
+        <button id="btn-stats" type="button" title="Statistics"
+          class="glass-panel w-9 h-9 rounded-xl flex items-center justify-center text-slate-200 hover:text-amber-200 hover:border-amber-400/50 transition cursor-pointer"
+          aria-label="View Statistics">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+        </button>
+
+        <button id="btn-help" type="button" title="How to Play"
+          class="glass-panel w-9 h-9 rounded-xl flex items-center justify-center text-slate-200 hover:text-teal-200 hover:border-teal-400/50 transition cursor-pointer"
+          aria-label="How to Play">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </button>
+
+        <button id="btn-new-game" type="button" title="New Cipher"
+          class="font-mono-cyber px-3 h-9 rounded-lg text-xs font-bold bg-pink-500/20 border border-pink-400/60 text-pink-200 hover:bg-pink-500/35 hover:border-pink-300 shadow-[0_0_12px_rgba(255,42,133,0.25)] transition cursor-pointer flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+          <span class="hidden sm:inline">New</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN ARENA -->
+    <main class="w-full flex-1 flex flex-col items-center justify-center gap-2 my-0.5">
+      <!-- SECRET 5-LETTER VAULT BAR -->
+      <section class="w-full glass-panel cyber-hud rounded-xl px-3.5 py-2.5 flex flex-col items-center gap-2">
+        <div class="w-full flex items-center justify-between text-[11px] sm:text-xs">
+          <span class="font-mono-cyber inline-flex items-center gap-1.5 text-pink-400 font-semibold uppercase tracking-widest">
+            <span class="w-2 h-2 rounded-sm bg-pink-500 animate-pulse shadow-[0_0_8px_#ff2a85]"></span>
+            TARGET_CIPHER [ENCRYPTED]
+          </span>
+          <div class="flex items-center gap-3">
+            <span id="streak-pill" class="text-slate-300 font-medium">Streak: <strong class="text-amber-300">0</strong></span>
+            <span id="attempt-pill" class="px-2 py-0.5 rounded-full bg-slate-800/90 border border-slate-700 text-slate-200 font-semibold">
+              Guess 1 / 10
+            </span>
+          </div>
+        </div>
+
+        <div id="secret-slots" class="flex items-center justify-center gap-2 sm:gap-2.5" aria-label="Secret 5-letter word">
+          <div class="secret-slot" data-secret-idx="0">?</div>
+          <div class="secret-slot" data-secret-idx="1">?</div>
+          <div class="secret-slot" data-secret-idx="2">?</div>
+          <div class="secret-slot" data-secret-idx="3">?</div>
+          <div class="secret-slot" data-secret-idx="4">?</div>
+        </div>
+
+        <!-- Compact Legend + Oracle Hint -->
+        <div class="w-full flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-700/40 text-[11px] sm:text-xs">
+          <div class="flex items-center gap-3 text-slate-300">
+            <span class="inline-flex items-center gap-1.5">
+              <img src="assets/bull.jpg" alt="Bull" class="w-4 h-4 medallion-gold" />
+              <strong class="text-pink-400">BULL</strong> = exact position
+            </span>
+            <span class="inline-flex items-center gap-1.5">
+              <img src="assets/cow.jpg" alt="Cow" class="w-4 h-4 medallion-teal" />
+              <strong class="text-cyan-300">COW</strong> = wrong position
+            </span>
+          </div>
+
+          <button id="btn-hint" type="button"
+            class="font-mono-cyber inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-cyan-500/15 border border-cyan-400/55 text-cyan-200 hover:bg-cyan-500/30 hover:border-cyan-300 shadow-[0_0_10px_rgba(0,240,255,0.2)] transition font-semibold cursor-pointer">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18h6"></path>
+              <path d="M10 22h4"></path>
+              <path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"></path>
+            </svg>
+            <span id="hint-label">Oracle Hint (3)</span>
+          </button>
+        </div>
+
+        <div id="hint-banner" class="hidden w-full text-center text-xs text-teal-200 bg-teal-950/60 border border-teal-500/35 rounded-xl py-1.5 px-3"></div>
+      </section>
+
+      <!-- 5x5 GUESS BOARD WITH BESIDE-ROW BULLS & COWS -->
+      <section class="w-full glass-panel cyber-hud rounded-xl p-2 sm:p-2.5">
+        <div class="flex items-center justify-between px-2 pb-2 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+          <span class="font-mono-cyber text-cyan-300/80">EXEC_LOG // 10 ATTEMPTS</span>
+          <span class="font-mono-cyber text-pink-300/80 pr-1">BULLS &amp; COWS</span>
+        </div>
+        <div id="guess-board" class="grid grid-cols-1 md:grid-cols-2 md:grid-flow-col md:grid-rows-5 gap-x-3 gap-y-1 max-h-[290px] md:max-h-none overflow-y-auto md:overflow-visible pr-0.5 md:pr-0" role="grid" aria-label="Cow Bull 10 guess board">
+          <!-- 5 rows rendered by JS -->
+        </div>
+        <div id="validation-banner" class="hidden font-mono-cyber mt-2 text-center text-xs font-semibold text-pink-200 bg-pink-950/80 border border-pink-500/70 rounded-lg py-1.5 px-3 shadow-[0_0_14px_rgba(255,42,133,0.3)]" role="alert"></div>
+      </section>
+
+      <!-- INTERACTIVE KEYBOARD + DEDUCTION MARKER BAR -->
+      <section class="w-full glass-panel cyber-hud rounded-xl p-2.5 sm:p-3 flex flex-col gap-2">
+        <div class="flex items-center justify-between gap-2 px-1">
+          <div class="flex items-center gap-1.5 text-[11px] text-slate-400">
+            <span id="mode-status-text">Type or tap letters to guess</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button id="btn-mark-mode" type="button"
+              class="px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-slate-600/70 bg-slate-800/80 text-slate-300 hover:border-teal-400/60 hover:text-teal-200 transition cursor-pointer flex items-center gap-1.5"
+              title="Toggle Note Mode to mark letters on the keyboard as Eliminated, Cow, or Bull">
+              <span class="w-2 h-2 rounded-full bg-slate-400" id="mark-mode-dot"></span>
+              <span>Note Marker: <strong id="mark-mode-state">OFF</strong></span>
+            </button>
+            <button id="btn-clear-notes" type="button"
+              class="px-2 py-1 rounded-lg text-[11px] font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition cursor-pointer"
+              title="Clear all letter notes">
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <div id="keyboard" class="flex flex-col gap-1.5 w-full" aria-label="On-screen keyboard">
+          <!-- Keyboard rows rendered by JS -->
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER TIP -->
+    <footer class="w-full text-center text-[11px] text-slate-500 pt-1">
+      Tip: Right-click any keyboard letter (or toggle <strong class="text-slate-400">Note Marker</strong>) to track eliminated letters, Cows, or Bulls.
+    </footer>
+  </div>
+
+  <!-- HOW TO PLAY MODAL -->
+  <div id="modal-help" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="help-title">
+    <div class="modal-card glass-panel rounded-2xl max-w-md w-full p-5 sm:p-6 border border-amber-400/30">
+      <div class="flex items-center justify-between mb-3">
+        <h2 id="help-title" class="font-display text-xl font-bold text-amber-200 tracking-wide">How to Play Cows &amp; Bulls</h2>
+        <button type="button" data-close-modal="modal-help" class="w-8 h-8 rounded-lg bg-slate-800/80 text-slate-300 hover:text-white flex items-center justify-center cursor-pointer" aria-label="Close">✕</button>
+      </div>
+      <div class="space-y-3 text-sm text-slate-300 leading-relaxed">
+        <p>Crack the hidden <strong class="text-white">5-letter secret word</strong> (5 unique letters) within <strong class="text-amber-300">10 guesses</strong>. Every guess must be a valid <strong class="text-teal-200">dictionary word</strong>.</p>
+        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-400/30 flex items-center gap-3">
+          <img src="assets/bull.jpg" alt="Bull Medallion" class="w-11 h-11 medallion-gold shrink-0" />
+          <div>
+            <div class="font-bold text-amber-300">BULL — Exact Match</div>
+            <div class="text-xs text-slate-300">The letter is in the secret word AND in the exact same position.</div>
+          </div>
+        </div>
+        <div class="p-3 rounded-xl bg-teal-500/10 border border-teal-400/30 flex items-center gap-3">
+          <img src="assets/cow.jpg" alt="Cow Medallion" class="w-11 h-11 medallion-teal shrink-0" />
+          <div>
+            <div class="font-bold text-teal-300">COW — Wrong Position</div>
+            <div class="text-xs text-slate-300">The letter exists in the secret word, but in a different position.</div>
+          </div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-700/60 text-xs space-y-1.5">
+          <div class="font-semibold text-slate-200">Example: Secret word is <span class="text-amber-300 tracking-widest font-display">FLAME</span></div>
+          <div>If you guess <span class="text-white font-bold tracking-widest">FRAME</span> &rarr; <strong class="text-amber-300">4 Bulls</strong> (F, A, M, E in exact spots) &amp; <strong class="text-teal-300">0 Cows</strong>.</div>
+          <div>If you guess <span class="text-white font-bold tracking-widest">LEMON</span> &rarr; <strong class="text-amber-300">0 Bulls</strong> &amp; <strong class="text-teal-300">3 Cows</strong> (L, E, M exist in other spots).</div>
+        </div>
+        <p class="text-xs text-slate-400">Use <strong class="text-slate-200">Note Marker</strong> or right-click keys on the keyboard to color-code your deductions as you narrow down the cipher.</p>
+      </div>
+      <button type="button" data-close-modal="modal-help"
+        class="mt-4 w-full py-2.5 rounded-xl font-semibold text-sm bg-gradient-to-r from-amber-500 to-yellow-600 text-slate-950 hover:from-amber-400 hover:to-yellow-500 transition cursor-pointer">
+        Got It — Let's Play
+      </button>
+    </div>
+  </div>
+
+  <!-- STATS MODAL -->
+  <div id="modal-stats" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="stats-title">
+    <div class="modal-card glass-panel rounded-2xl max-w-sm w-full p-5 sm:p-6 border border-slate-600/40">
+      <div class="flex items-center justify-between mb-4">
+        <h2 id="stats-title" class="font-display text-xl font-bold text-amber-200 tracking-wide">Vault Record</h2>
+        <button type="button" data-close-modal="modal-stats" class="w-8 h-8 rounded-lg bg-slate-800/80 text-slate-300 hover:text-white flex items-center justify-center cursor-pointer" aria-label="Close">✕</button>
+      </div>
+      <div class="grid grid-cols-4 gap-2 text-center mb-5">
+        <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-700/60">
+          <div id="stat-played" class="text-xl font-bold text-white">0</div>
+          <div class="text-[10px] uppercase tracking-wider text-slate-400">Played</div>
+        </div>
+        <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-700/60">
+          <div id="stat-winpct" class="text-xl font-bold text-teal-300">0%</div>
+          <div class="text-[10px] uppercase tracking-wider text-slate-400">Win %</div>
+        </div>
+        <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-700/60">
+          <div id="stat-streak" class="text-xl font-bold text-amber-300">0</div>
+          <div class="text-[10px] uppercase tracking-wider text-slate-400">Streak</div>
+        </div>
+        <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-700/60">
+          <div id="stat-best" class="text-xl font-bold text-amber-200">0</div>
+          <div class="text-[10px] uppercase tracking-wider text-slate-400">Best</div>
+        </div>
+      </div>
+      <div class="space-y-2 mb-4">
+        <div class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Guess Distribution</div>
+        <div id="stat-dist" class="space-y-1.5 text-xs"></div>
+      </div>
+      <button type="button" data-close-modal="modal-stats"
+        class="w-full py-2 rounded-xl font-semibold text-sm bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-600/60 transition cursor-pointer">
+        Close
+      </button>
+    </div>
+  </div>
+
+  <!-- END-OF-GAME MODAL -->
+  <div id="modal-end" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="end-title">
+    <div class="modal-card glass-panel rounded-2xl max-w-sm w-full p-5 sm:p-6 text-center border border-amber-400/40">
+      <div class="flex justify-center mb-3">
+        <img id="end-medallion"
+             src="assets/bull.jpg"
+             alt="Result Emblem"
+             class="w-20 h-20 medallion-gold" />
+      </div>
+      <h2 id="end-title" class="font-display text-2xl font-extrabold text-amber-200 tracking-wide mb-1">Cipher Cracked!</h2>
+      <p id="end-subtitle" class="text-sm text-slate-300 mb-4">You unlocked the word in 3 guesses.</p>
+
+      <div class="p-3 rounded-xl bg-slate-900/85 border border-amber-400/30 mb-4">
+        <div class="text-[10px] uppercase tracking-widest text-slate-400 mb-1">Secret Word</div>
+        <div id="end-secret-word" class="font-display text-2xl font-extrabold tracking-[0.28em] text-amber-300 pl-2">FLAME</div>
+      </div>
+
+      <div class="flex gap-2">
+        <button id="btn-share-result" type="button"
+          class="flex-1 py-2.5 rounded-xl font-semibold text-sm bg-slate-800 hover:bg-slate-700 text-teal-200 border border-teal-400/40 transition cursor-pointer">
+          Copy Summary
+        </button>
+        <button id="btn-play-again" type="button"
+          class="flex-1 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 hover:from-amber-400 hover:to-yellow-400 transition cursor-pointer">
+          Play Again
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ========================
+         CURATED 5-LETTER ISOGRAM WORD BANK
+         (All 5 unique letters — ideal for classic Cow & Bull)
+         ======================== */
+      const WORD_BANK = [
+        'ABOVE','ACORN','ADMIT','ADOPT','AFTER','AGENT','AGILE','AISLE','ALBUM','ALERT',
+        'ALIEN','ALIGN','ALIVE','ALONG','ALTER','AMBER','AMPLE','ANGEL','ANGER','ANGLE',
+        'ANGRY','ANKLE','ANTIC','ANVIL','APRON','ARGUE','ARISE','ASIDE','ATONE','AUDIO',
+        'AUDIT','AVOID','AWAIT','AWAKE','AWARD','BADGE','BAKER','BALMY','BARGE','BASIC',
+        'BASIL','BASIN','BATCH','BEACH','BEARD','BEAST','BEGIN','BEING','BELOW','BENCH',
+        'BINGE','BIOME','BIRCH','BIRTH','BISON','BLACK','BLADE','BLAME','BLAND','BLANK',
+        'BLAST','BLAZE','BLEAK','BLEND','BLIMP','BLIND','BLINK','BLOAT','BLOCK','BLOND',
+        'BLOWN','BLUNT','BLURT','BOARD','BOAST','BONUS','BOUND','BOXER','BRACE','BRAID',
+        'BRAIN','BRAKE','BRAND','BRASH','BRAVE','BRAVO','BRAWL','BREAD','BREAK','BRICK',
+        'BRIDE','BRIEF','BRINE','BRING','BRINK','BRISK','BROAD','BROIL','BROKE','BROTH',
+        'BROWN','BRUNT','BRUSH','BUDGE','BUGLE','BUILD','BUILT','BULGE','BUNCH','BURNT',
+        'BURST','BUYER','CABIN','CABLE','CADET','CAIRN','CAMEL','CANDY','CANOE','CAPER',
+        'CARGO','CAROL','CARVE','CASTE','CATER','CAUSE','CAVIL','CEDAR','CHAIN','CHAIR',
+        'CHALK','CHAMP','CHANT','CHAOS','CHARD','CHARM','CHART','CHASE','CHASM','CHEAP',
+        'CHEAT','CHEST','CHIDE','CHIEF','CHILD','CHIME','CHIMP','CHINA','CHIRP','CHIVE',
+        'CHOIR','CHOKE','CHORD','CHORE','CHOSE','CHUMP','CHUNK','CHURN','CHUTE','CIDER',
+        'CIGAR','CINCH','CIVET','CLAIM','CLAMP','CLANG','CLANK','CLASH','CLASP','CLEAN',
+        'CLEAR','CLEAT','CLEFT','CLERK','CLIMB','CLIME','CLING','CLINK','CLOAK','CLONE',
+        'CLOSE','CLOTH','CLOUD','CLOUT','CLOVE','CLOWN','CLUMP','CLUNG','COACH','COAST',
+        'COBRA','COMET','CONGA','CORAL','CORGI','COUGH','COULD','COUNT','COUPE','COURT',
+        'COVEN','COVER','COVET','COWER','COYPU','CRAFT','CRAMP','CRANE','CRANK','CRASH',
+        'CRATE','CRAVE','CRAWL','CRAZE','CRAZY','CREAK','CREAM','CREDO','CREST','CRICK',
+        'CRIED','CRIME','CRIMP','CRISP','CROAK','CROFT','CRONE','CRONY','CROWD','CROWN',
+        'CRUDE','CRUEL','CRUMB','CRUMP','CRUSH','CRUST','CRYPT','CUBIT','CUMIN','CURIO',
+        'CURLY','CURSE','CURVE','CURVY','CUSHY','CUTIE','CYBER','DAILY','DAIRY','DAISY',
+        'DANCE','DEALT','DEATH','DEBAR','DEBIT','DEBUG','DEBUT','DECAL','DECAY','DECOR',
+        'DECOY','DECRY','DEITY','DELAY','DELTA','DELVE','DEMON','DEMUR','DENIM','DEPOT',
+        'DEPTH','DERBY','DETOX','DEUCE','DEVIL','DIARY','DICER','DIGIT','DINER','DINGO',
+        'DINGY','DIODE','DIRGE','DIRTY','DISCO','DITCH','DIVER','DOING','DONUT','DOPEY',
+        'DOUBT','DOUGH','DOWEL','DOWER','DOWNS','DOWNY','DOWRY','DOWSE','DOZEN','DRAFT',
+        'DRAIN','DRAKE','DRANK','DRAPE','DRAWL','DRAWN','DREAD','DREAM','DRIFT','DRINK',
+        'DRIVE','DROIT','DRONE','DROWN','DRUGS','DRUNK','DUCHY','DUCKY','DUMPY','DUNCE',
+        'DUSKY','DUSTY','DUTCH','DUVET','DWARF','DWELT','DYING','EARLY','EARTH','EBONY',
+        'ECLAT','EDICT','EDIFY','EIGHT','ELBOW','ELFIN','ELITE','ELOPE','ELUDE','EMAIL',
+        'EMPTY','ENACT','ENDOW','ENJOY','ENNUI','ENSUE','ENTRY','ENVOY','EPOCH','EPOXY',
+        'EQUAL','EQUIP','ERUPT','ETHIC','ETHOS','EVADE','EVICT','EVOKE','EXACT','EXALT',
+        'EXIST','EXPAT','EXTOL','EXTRA','EXULT','FABLE','FACET','FAINT','FAIRY','FAITH',
+        'FALSE','FANCY','FARCE','FAULT','FAUNA','FAVOR','FEAST','FEIGN','FEINT','FELON',
+        'FEMUR','FERAL','FETAL','FETCH','FETID','FETUS','FIBER','FICHE','FICUS','FIELD',
+        'FIEND','FIERY','FIGHT','FILCH','FILET','FILMY','FILTH','FINAL','FINCH','FINER',
+        'FIRST','FISHY','FIXER','FJORD','FLACK','FLAIR','FLAKE','FLAKY','FLAME','FLANK',
+        'FLARE','FLASH','FLASK','FLECK','FLESH','FLICK','FLIER','FLING','FLINT','FLIRT',
+        'FLOAT','FLOCK','FLORA','FLOUR','FLOUT','FLOWN','FLUID','FLUKE','FLUKY','FLUME',
+        'FLUNG','FLUNK','FLUSH','FLUTE','FOAMY','FOCAL','FOCUS','FOGEY','FOIST','FOLIO',
+        'FORAY','FORCE','FORGE','FORTE','FORTH','FORTY','FORUM','FOUND','FOUNT','FOVEA',
+        'FOYER','FRAIL','FRAME','FRANK','FRAUD','FREAK','FRESH','FRIAR','FRIED','FRISK',
+        'FRITZ','FROCK','FROND','FRONT','FROST','FROTH','FROWN','FROZE','FRUIT','FRUMP',
+        'FUDGE','FUGUE','FUNGI','FUNKY','GABLE','GAILY','GAMER','GAMUT','GASSY','GAUDY',
+        'GAUGE','GAUNT','GAUZE','GAUZY','GAVEL','GAWKY','GAYER','GAYLY','GAZER','GECKO',
+        'GENIE','GENRE','GHOST','GHOUL','GIANT','GIDDY','GIPSY','GIRLY','GIRTH','GIVEN',
+        'GIVER','GLADE','GLAND','GLARE','GLEAM','GLEAN','GLIDE','GLINT','GLOAT','GLOBE',
+        'GLORY','GLOVE','GLUED','GLYPH','GNASH','GNOME','GODLY','GOLEM','GONAD','GONER',
+        'GOURD','GRACE','GRADE','GRAFT','GRAIL','GRAIN','GRAND','GRANT','GRAPE','GRAPH',
+        'GRASP','GRATE','GRAVE','GRAVY','GRAZE','GREAT','GRIEF','GRIME','GRIMY','GRIND',
+        'GRIPE','GROAN','GROIN','GROPE','GROUP','GROUT','GROVE','GROWL','GROWN','GRUEL',
+        'GRUNT','GUARD','GUAVA','GUIDE','GUILD','GUILE','GUILT','GUISE','GULCH','GULPY',
+        'GUMBO','GUSTO','GUSTY','HABIT','HAIRY','HALVE','HANDY','HARDY','HAREM','HARPY',
+        'HASTE','HASTY','HATER','HAUNT','HAUTE','HAVEN','HAVOC','HAZEL','HEADY','HEARD',
+        'HEART','HEAVY','HEFTY','HEIST','HELIX','HERON','HERTZ','HIKER','HINGE','HIPPO',
+        'HITCH','HOARD','HOARY','HOBBY','HOIST','HOMER','HONEY','HORDE','HORNY','HORSE',
+        'HOTEL','HOTLY','HOUND','HOUSE','HOVEL','HOVER','HOWDY','HUMAN','HUMID','HUMOR',
+        'HUMPH','HUNCH','HUNKY','HURRY','HUSKY','HYDRA','HYENA','HYMEN','HYPER','ICILY',
+        'ICING','IDEAL','IDIOM','IDLER','IGLOO','IMAGE','IMBUE','IMPEL','IMPLY','INANE',
+        'INAPT','INCUR','INDEX','INEPT','INERT','INFER','INGOT','INLAY','INLET','INPUT',
+        'INTER','INTRO','IONIC','IRATE','IRONY','ISLET','ITCHY','IVORY','JAUNT','JAZZY',
+        'JERKY','JETTY','JEWEL','JIFFY','JOINT','JOIST','JOKER','JOLLY','JOUST','JUDGE',
+        'JUICE','JUICY','JUMBO','JUMPY','JUNTA','JUNTO','JUROR','KAPOK','KAPUT','KARMA',
+        'KAYAK','KEBAB','KHAKI','KINKY','KIOSK','KITTY','KNACK','KNAVE','KNEAD','KNEEL',
+        'KNELT','KNIFE','KNOCK','KNOLL','KNOWN','KOALA','KRILL','LABEL','LABOR','LADEN',
+        'LADLE','LAGER','LANCE','LANKY','LAPEL','LAPSE','LARGE','LARVA','LASER','LASSO',
+        'LATCH','LATER','LATHE','LATTE','LAUGH','LAYER','LEACH','LEAFY','LEAKY','LEANT',
+        'LEAPT','LEARN','LEASE','LEASH','LEAST','LEAVE','LEDGE','LEECH','LEERY','LEFTY',
+        'LEGAL','LEGGY','LEMON','LEMUR','LEPER','LEVEL','LEVER','LIBEL','LIEGE','LIGHT',
+        'LIKEN','LILAC','LIMBO','LIMIT','LINEN','LINER','LINGO','LIPID','LITHE','LIVER',
+        'LIVID','LLAMA','LOAMY','LOATH','LOBBY','LOCAL','LOCUS','LODGE','LOFTY','LOGIC',
+        'LOGIN','LOOPY','LOOSE','LORRY','LOSER','LOUSE','LOUSY','LOVER','LOWER','LOWLY',
+        'LOYAL','LUCID','LUCKY','LUMEN','LUMPY','LUNAR','LUNCH','LUNGE','LUPUS','LURCH',
+        'LURID','LUSTY','LYING','LYMPH','LYNCH','LYRIC','MACAW','MACHO','MACRO','MADAM',
+        'MADLY','MAFIA','MAGIC','MAGMA','MAIZE','MAJOR','MAKER','MAMBO','MAMMA','MAMMY',
+        'MANGA','MANGE','MANGO','MANGY','MANIA','MANIC','MANLY','MANOR','MAPLE','MARCH',
+        'MARRY','MARSH','MASON','MASSE','MATCH','MATEY','MAUVE','MAXIM','MAYBE','MAYOR',
+        'MEALY','MEANT','MEATY','MECCA','MEDAL','MEDIA','MEDIC','MELEE','MELON','MERCY',
+        'MERGE','MERIT','MERRY','METAL','METER','METRO','MICRO','MIDGE','MIDST','MIGHT',
+        'MILKY','MIMIC','MINCE','MINER','MINIM','MINOR','MINTY','MINUS','MIRTH','MISER',
+        'MISSY','MOCHA','MODAL','MODEL','MODEM','MOGUL','MOIST','MOLAR','MOLDY','MONEY',
+        'MONTH','MOODY','MOOSE','MORAL','MORON','MORPH','MOSSY','MOTEL','MOTIF','MOTOR',
+        'MOTTO','MOULT','MOUND','MOUNT','MOURN','MOUSE','MOUTH','MOVER','MOVIE','MOWER',
+        'MUCKY','MUCUS','MUDDY','MULCH','MUMMY','MUNCH','MURAL','MURKY','MUSHY','MUSIC',
+        'MUSKY','MUSTY','MYRRH','NADIR','NAIVE','NANNY','NASAL','NASTY','NATAL','NAVAL',
+        'NAVEL','NEEDY','NEIGH','NERDY','NERVE','NEVER','NEWER','NEWLY','NICER','NICHE',
+        'NIECE','NIGHT','NINJA','NINNY','NINTH','NOBLE','NOBLY','NOISE','NOISY','NOMAD',
+        'NOOSE','NORTH','NOSEY','NOTCH','NOVEL','NUDGE','NURSE','NUTTY','NYLON','NYMPH',
+        'OAKEN','OBESE','OCCUR','OCEAN','OCTAL','OCTET','ODDER','ODDLY','OFFAL','OFFER',
+        'OFTEN','OLDEN','OLDER','OLIVE','OMBRE','OMEGA','ONION','ONSET','OPERA','OPINE',
+        'OPIUM','OPTIC','ORBIT','ORDER','ORGAN','OTHER','OTTER','OUGHT','OUNCE','OUTDO',
+        'OUTER','OUTGO','OVARY','OVATE','OVERT','OVINE','OVOID','OWING','OWNER','OXIDE',
+        'OZONE','PADDY','PAGAN','PAINT','PALER','PALSY','PANEL','PANIC','PANSY','PAPAL',
+        'PAPER','PARER','PARKA','PARRY','PARSE','PARTY','PASTA','PASTE','PASTY','PATCH',
+        'PATIO','PATSY','PATTY','PAUSE','PAYEE','PAYER','PEACE','PEACH','PEARL','PECAN',
+        'PEDAL','PENAL','PENCE','PENNE','PENNY','PERCH','PERIL','PERKY','PESKY','PESTO',
+        'PETAL','PETTY','PHASE','PHONE','PHONY','PHOTO','PIANO','PICKY','PIECE','PIETY',
+        'PIGGY','PILOT','PINCH','PINEY','PINKY','PINTO','PIPER','PIQUE','PITCH','PITHY',
+        'PIVOT','PIXEL','PIXIE','PIZZA','PLACE','PLAID','PLAIN','PLAIT','PLANE','PLANK',
+        'PLANT','PLATE','PLAZA','PLEAD','PLEAT','PLIED','PLIER','PLUCK','PLUMB','PLUME',
+        'PLUMP','PLUNK','PLUSH','POESY','POINT','POISE','POKER','POLAR','POLKA','POLYP',
+        'POOCH','POPPY','PORCH','POSER','POSIT','POSSE','POUCH','POUND','POUTY','POWER',
+        'PRANK','PRAWN','PREEN','PRESS','PRICE','PRICK','PRIDE','PRIED','PRIME','PRIMO',
+        'PRINT','PRIOR','PRISM','PRIVY','PRIZE','PROBE','PRONE','PRONG','PROOF','PROSE',
+        'PROUD','PROVE','PROWL','PROXY','PRUDE','PRUNE','PSALM','PUBIC','PUDGY','PUFFY',
+        'PULPY','PULSE','PUNCH','PUPAL','PUPIL','PUPPY','PUREE','PURER','PURGE','PURSE',
+        'PUSHY','PUTTY','PYGMY','QUACK','QUAIL','QUAKE','QUALM','QUARK','QUART','QUASH',
+        'QUASI','QUEEN','QUEER','QUELL','QUERY','QUEST','QUEUE','QUICK','QUIET','QUILL',
+        'QUILT','QUIRK','QUITE','QUOTA','QUOTE','QUOTH','RABBI','RABID','RACER','RADAR',
+        'RADII','RADIO','RAINY','RAISE','RAJAH','RALLY','RALPH','RAMEN','RANCH','RANDY',
+        'RANGE','RAPID','RARER','RASPY','RATIO','RATTY','RAVEN','RAYON','RAZOR','REACH',
+        'REACT','READY','REALM','REARM','REBAR','REBEL','REBUS','REBUT','RECAP','RECUR',
+        'RECUT','REEDY','REFER','REFIT','REGAL','REHAB','REIGN','RELAX','RELAY','RELIC',
+        'REMIT','RENAL','RENEW','REPAY','REPEL','REPLY','RERUN','RESET','RESIN','RETCH',
+        'RETRO','RETRY','REUSE','REVEL','REVUE','RHINO','RHYME','RIDER','RIDGE','RIFLE',
+        'RIGHT','RIGID','RIGOR','RINSE','RIPEN','RIPER','RISEN','RISER','RISKY','RIVAL',
+        'RIVER','RIVET','ROACH','ROAST','ROBIN','ROBOT','ROCKY','RODEO','ROGER','ROGUE',
+        'ROOMY','ROOST','ROTOR','ROUGE','ROUGH','ROUND','ROUSE','ROUTE','ROVER','ROWDY',
+        'ROWER','ROYAL','RUDDY','RUDER','RUGBY','RULER','RUMBA','RUMOR','RUPEE','RURAL',
+        'RUSTY','SADLY','SAFER','SAINT','SALAD','SALLY','SALON','SALSA','SALTY','SALVE',
+        'SALVO','SANDY','SANER','SAPPY','SASSY','SATIN','SATYR','SAUCE','SAUCY','SAUNA',
+        'SAUTE','SAVOR','SAVOY','SAVVY','SCALD','SCALE','SCALP','SCALY','SCAMP','SCANT',
+        'SCARE','SCARF','SCARY','SCENE','SCENT','SCION','SCOFF','SCOLD','SCONE','SCOOP',
+        'SCOPE','SCORE','SCORN','SCOUR','SCOUT','SCOWL','SCRAM','SCRAP','SCREE','SCREW',
+        'SCRUB','SCRUM','SCUBA','SEDAN','SEEDY','SEGUE','SEIZE','SEMEN','SENSE','SEPIA',
+        'SERIF','SERUM','SERVE','SETUP','SEVEN','SEVER','SEWER','SHACK','SHADE','SHADY',
+        'SHAFT','SHAKE','SHAKY','SHALE','SHALL','SHALT','SHAME','SHANK','SHAPE','SHARD',
+        'SHARE','SHARK','SHARP','SHAVE','SHAWL','SHEAF','SHEAR','SHEEN','SHEEP','SHEER',
+        'SHEET','SHEIK','SHELF','SHELL','SHIED','SHIFT','SHINE','SHINY','SHIRE','SHIRK',
+        'SHIRT','SHOAL','SHOCK','SHONE','SHOOK','SHOOT','SHORE','SHORN','SHORT','SHOUT',
+        'SHOVE','SHOWN','SHOWY','SHREW','SHRUB','SHRUG','SHUCK','SHUNT','SHUSH','SHYLY',
+        'SIEGE','SIEVE','SIGHT','SIGMA','SILKY','SILLY','SINCE','SINEW','SINGE','SIREN',
+        'SISSY','SIXTH','SIXTY','SKATE','SKIER','SKIFF','SKILL','SKIMP','SKIRT','SKULK',
+        'SKULL','SKUNK','SLACK','SLAIN','SLANG','SLANT','SLASH','SLATE','SLAVE','SLEEK',
+        'SLEEP','SLEET','SLEPT','SLICE','SLICK','SLIDE','SLIME','SLIMY','SLING','SLINK',
+        'SLOOP','SLOPE','SLOSH','SLOTH','SLUMP','SLUNG','SLUNK','SLURP','SLUSH','SLYLY',
+        'SMACK','SMALL','SMART','SMASH','SMEAR','SMELL','SMELT','SMILE','SMIRK','SMITE',
+        'SMITH','SMOCK','SMOKE','SMOKY','SMOTE','SNACK','SNAIL','SNAKE','SNAKY','SNARE',
+        'SNARL','SNEAK','SNEER','SNIDE','SNIFF','SNIPE','SNOOP','SNORE','SNORT','SNOUT',
+        'SNOWY','SNUCK','SNUFF','SOAPY','SOBER','SOGGY','SOLAR','SOLID','SOLVE','SONAR',
+        'SONIC','SOOTH','SOOTY','SORRY','SOUND','SOUTH','SOWER','SPACE','SPADE','SPANK',
+        'SPARE','SPARK','SPASM','SPAWN','SPEAK','SPEAR','SPECK','SPEED','SPELL','SPELT',
+        'SPEND','SPENT','SPERM','SPICE','SPICY','SPIED','SPIEL','SPIKE','SPIKY','SPILL',
+        'SPILT','SPINE','SPINY','SPIRE','SPITE','SPLAT','SPLIT','SPOIL','SPOKE','SPOOF',
+        'SPOOK','SPOOL','SPOON','SPORE','SPORT','SPOUT','SPRAY','SPREE','SPRIG','SPUNK',
+        'SPURN','SPURT','SQUAD','SQUAT','SQUIB','STACK','STAFF','STAGE','STAID','STAIN',
+        'STAIR','STAKE','STALE','STALK','STALL','STAMP','STAND','STANK','STARE','STARK',
+        'START','STASH','STATE','STAVE','STEAD','STEAK','STEAL','STEAM','STEED','STEEL',
+        'STEEP','STEER','STEIN','STERN','STICK','STIFF','STILL','STILT','STING','STINK',
+        'STINT','STOCK','STOIC','STOKE','STOLE','STOMP','STONE','STONY','STOOD','STOOL',
+        'STOOP','STORE','STORK','STORM','STORY','STOUT','STOVE','STRAP','STRAW','STRAY',
+        'STRIP','STRUT','STUCK','STUDY','STUFF','STUMP','STUNG','STUNK','STUNT','STYLE',
+        'SUAVE','SUGAR','SUING','SUITE','SULKY','SULLY','SUMAC','SUNNY','SUPER','SURER',
+        'SURGE','SURLY','SUSHI','SWAMI','SWAMP','SWARM','SWASH','SWATH','SWEAR','SWEAT',
+        'SWEEP','SWEET','SWELL','SWEPT','SWIFT','SWILL','SWINE','SWING','SWIRL','SWISH',
+        'SWOON','SWOOP','SWORD','SWORE','SWORN','SWUNG','SYNOD','SYRUP','TABBY','TABLE',
+        'TABOO','TACIT','TACKY','TAFFY','TAINT','TAKEN','TAKER','TALLY','TALON','TAMER',
+        'TANGO','TANGY','TAPER','TAPIR','TARDY','TAROT','TASTE','TASTY','TATTY','TAUNT',
+        'TAWNY','TEACH','TEARY','TEASE','TEDDY','TEETH','TEMPO','TENET','TENOR','TENSE',
+        'TENTH','TEPEE','TEPID','TERRA','TERSE','TESTY','THANK','THEFT','THEIR','THEME',
+        'THERE','THESE','THETA','THICK','THIEF','THIGH','THING','THINK','THIRD','THONG',
+        'THORN','THOSE','THREE','THREW','THROB','THROW','THRUM','THUMB','THUMP','THYME',
+        'TIARA','TIBIA','TIDAL','TIGER','TIGHT','TILDE','TIMER','TIMID','TIPSY','TITAN',
+        'TITHE','TITLE','TOAST','TODAY','TODDY','TOKEN','TONAL','TONGA','TONIC','TOOTH',
+        'TOPAZ','TOPIC','TORCH','TORSO','TORUS','TOTAL','TOTEM','TOUCH','TOUGH','TOWEL',
+        'TOWER','TOXIC','TOXIN','TRACE','TRACK','TRACT','TRADE','TRAIL','TRAIN','TRAIT',
+        'TRAMP','TRASH','TRAWL','TREAD','TREAT','TREND','TRIAD','TRIAL','TRIBE','TRICE',
+        'TRICK','TRIED','TRIPE','TRITE','TROLL','TROOP','TROPE','TROUT','TROVE','TRUCE',
+        'TRUCK','TRUER','TRULY','TRUMP','TRUNK','TRUSS','TRUST','TRUTH','TRYST','TUBAL',
+        'TUBER','TULIP','TULLE','TUMOR','TUNIC','TURBO','TUTOR','TWANG','TWEAK','TWEED',
+        'TWEET','TWICE','TWINE','TWIRL','TWIST','TWIXT','TYING','UDDER','ULCER','ULTRA',
+        'UMBRA','UNCLE','UNCUT','UNDER','UNDID','UNDUE','UNFED','UNFIT','UNIFY','UNION',
+        'UNITE','UNITY','UNLIT','UNMET','UNSET','UNTIE','UNTIL','UNWED','UNZIP','UPPER',
+        'UPSET','URBAN','URINE','USAGE','USHER','USING','USUAL','USURP','UTILE','UTTER',
+        'VAGUE','VALET','VALID','VALOR','VALUE','VALVE','VAPID','VAPOR','VAULT','VAUNT',
+        'VEGAN','VENOM','VENUE','VERGE','VERSE','VERSO','VERVE','VICAR','VIDEO','VIGIL',
+        'VIGOR','VILLA','VINYL','VIOLA','VIPER','VIRAL','VIRUS','VISIT','VISOR','VISTA',
+        'VITAL','VIVID','VIXEN','VOCAL','VODKA','VOGUE','VOICE','VOILA','VOMIT','VOTER',
+        'VOUCH','VOWEL','VYING','WACKY','WAFER','WAGER','WAGON','WAIST','WAIVE','WALTZ',
+        'WARTY','WASTE','WATCH','WATER','WAVER','WAXEN','WEARY','WEAVE','WEDGE','WEEDY',
+        'WEIGH','WEIRD','WELCH','WELSH','WENCH','WHACK','WHALE','WHARF','WHEAT','WHEEL',
+        'WHELP','WHERE','WHICH','WHIFF','WHILE','WHINE','WHINY','WHIRL','WHISK','WHITE',
+        'WHOLE','WHOOP','WHOSE','WIDEN','WIDER','WIDOW','WIDTH','WIELD','WIGHT','WILLY',
+        'WIMPY','WINCE','WINCH','WINDY','WISER','WISPY','WITCH','WITTY','WOKEN','WOMAN',
+        'WOMEN','WOODY','WOOER','WOOLY','WOOZY','WORDY','WORLD','WORRY','WORSE','WORST',
+        'WORTH','WOULD','WOUND','WOVEN','WRACK','WRATH','WREAK','WRECK','WREST','WRING',
+        'WRIST','WRITE','WRONG','WROTE','WRUNG','WRYLY','YACHT','YEARN','YEAST','YIELD',
+        'YOUNG','YOUTH','ZEBRA','ZESTY','ZONAL'
+      ];
+
+      // Strictly UK English: exclude US-only spellings
+      const US_ONLY_WORDS = new Set([
+        'ARBOR','ARDOR','AGING','CHILI','COLOR','COZEY','DONUT','FAVOR','FIBER',
+        'GOFER','GRAYS','HONOR','HUMOR','LABOR','LITER','MITER','MOLDS','MOLDY',
+        'MOLTS','MOMMY','NITER','OCHER','ODORS','PLOWS','RIGOR','RUMOR','SABER',
+        'SAVOR','TUMOR','VALOR','VAPOR','VIGOR','WOOLY','GIPSY','CAGED'
+      ]);
+      // Ensure CAGED is valid UK English (remove from US_ONLY_WORDS)
+      US_ONLY_WORDS.delete('CAGED');
+
+      const UK_EXTRA_VALID_WORDS = [
+        // Distinctly UK English 5-letter words & common everyday 5-letter UK words (including non-isograms)
+        'FIBRE','LITRE','METRE','MITRE','OCHRE','SABRE','MOULD','MOULT','TYRES','KERBS',
+        'BLOKE','CUPPA','DODGY','FIZZY','GAFFE','LORRY','NAPPY','PLONK','SCONE','SCRUM',
+        'SKINT','SPUDS','STROP','SWOTS','TELLY','TOFFS','TWITS','YOBBO','MATES','PINTS',
+        'QUIDS','CHAPS','CHIPS','CHUFF','BOGEY','BONNY','BOOZE','BRINY','CADDY','CAIRN',
+        'MUMMY','DADDY','APPLE','HELLO','GREEN','TREES','BOOKS','QUEEN','SLEEP','SWEET',
+        'HAPPY','SUNNY','FUNNY','PUPPY','KITTY','BERRY','FLOOR','BLOOD','FLOOD','SPOON',
+        'BROOM','GROOM','BLOOM','GLOOM','PROOF','ROOFS','BOOTS','ROOTS','TOOLS','FOOLS',
+        'POOLS','COOLS','CLASS','GLASS','GRASS','BRASS','CROSS','DRESS','PRESS','BLESS',
+        'CHESS','GUESS','MESSY','FUSSY','BOSSY','MOSSY','DIZZY','JAZZY','FUZZY','PIZZA',
+        'PLAZA','SPEED','STEED','GREED','BREED','BLEED','CREED','FREED','SEEDS','NEEDS',
+        'WEEDS','FEEDS','DEEDS','REEDS','WHEEL','STEEL','KNEEL','FEELS','HEELS','PEELS',
+        'REELS','KEELS','CHEER','STEER','SHEER','SNEER','QUEER','BEERS','PEERS','JEERS',
+        'SEERS','SHEET','FLEET','SLEET','GREET','TEETH','GEESE','THREE','FREES','KNEES',
+        'AGREE','SPREE','SCREE','WATER','LATER','PAPER','TIGER','RIVER','LIVER','GIVER',
+        'DIVER','FEVER','NEVER','LEVER','EVERY','THERE','WHERE','THESE','THOSE','WHICH',
+        'WHILE','WHITE','WRITE','WHOLE','WHOSE','ABOUT','ABOVE','AFTER','AGAIN','AMONG',
+        'BEGAN','BEGIN','BEING','BELOW','COULD','WOULD','MIGHT','RIGHT','LIGHT','NIGHT',
+        'SIGHT','FIGHT','TIGHT','EIGHT','FIRST','THIRD','FIFTH','SIXTH','SEVEN','NINTH',
+        'TENTH','WORLD','WORDS','WORKS','YEARS','TIMES','LINES','MINDS','KINDS','FINDS',
+        'WINDS','HANDS','LANDS','BANDS','SANDS','CARDS','HARDS','YARDS','WARDS','PARTS',
+        'CARTS','DARTS','TARTS','PORTS','FORTS','SORTS','SHORT','SPORT','START','SMART',
+        'CHART','HEART','EARTH','WORTH','NORTH','SOUTH','MOUTH','YOUTH','TRUTH','FAITH',
+        'BIRTH','MIRTH','GIRTH','FORTH','CLOTH','SLOTH','FROTH','BROTH','TOOTH','BOOTH',
+        'SOOTH','GAMES','NAMES','FAMES','TAMES','FLAME','FRAME','BLAME','SHAME','CLAIM',
+        'PLAIN','TRAIN','BRAIN','DRAIN','GRAIN','CHAIN','STAIN','PAINT','SAINT','FAINT',
+        'TAINT','PLANT','SLANT','GRANT','CHANT','SCANT','GIANT','MEANT','LEANT','DEALT',
+        'SPELT','SMELT','KNELT','DWELT','BUILT','GUILT','QUILT','STILT','DRIFT','SHIFT',
+        'SWIFT','CLIFF','STIFF','SNIFF','WHIFF','STAFF','CHAFF','QUAFF','STUFF','BLUFF',
+        'FLUFF','GRUFF','SCUFF','SNUFF','SMALL','STALL','SHALL','HALLS','BALLS','CALLS',
+        'FALLS','MALLS','WALLS','BELLS','CELLS','FELLS','SELLS','TELLS','WELLS','YELLS',
+        'BILLS','FILLS','GILLS','HILLS','KILLS','MILLS','PILLS','SILLS','TILLS','WILLS',
+        'DOLLS','POLLS','ROLLS','TOLLS','BULLS','CULLS','DULLS','GULLS','HULLS','LULLS',
+        'MULLS','PULLS','STILL','SKILL','SPILL','CHILL','DRILL','FRILL','GRILL','KRILL',
+        'QUILL','SWILL','TRILL','TWILL','SPELL','SMELL','SWELL','SHELL','DWELL','KNELL',
+        'QUELL','TROLL','DROLL','STROLL','STARS','CARS','BARNS','FARMS','WARMS','ARMS',
+        'BIRDS','HERDS','NERDS','CURDS','PLAYS','STAYS','CLAYS','TRAYS','PRAYS','GRAYS',
+        'GREYS','PREYS','OBEYS','MAKES','TAKES','BAKES','CAKES','FAKES','LAKES','RAKES',
+        'SAKES','WAKES','GIVES','LIVES','DIVES','FIVES','HIVES','RIVES','WIVES','COMES',
+        'DOMES','HOMES','TOMES','LOOKS','COOKS','HOOKS','NOOKS','ROOKS','TOOKS','KNOWS',
+        'BLOWS','CROWS','FLOWS','GLOWS','GROWS','SHOWS','SLOWS','SNOWS','STOWS','TURNS',
+        'BURNS','CHURN','SPURN','MOVES','COVES','DOVES','LOVES','ROVES','HELPS','KELPS',
+        'YELPS','HEARS','BEARS','DEARS','FEARS','GEARS','NEARS','PEARS','REARS','SEARS',
+        'TEARS','WEARS','YEARS','SEEMS','DEEMS','TEEMS','KEEPS','BEEPS','DEEPS','JEEPS',
+        'PEEPS','SEEPS','WEEPS','HOLDS','BOLDS','COLDS','FOLDS','GOLDS','SCOLD','TOLD',
+        'BOATS','COATS','GOATS','MOATS','FLOAT','GLOAT','BLOAT','STOAT','THROAT','SHOES',
+        'FOES','TOES','DOORS','MOORS','POORS','STARS','SCARS','SPARS','CHAR','CHAIR',
+        'TABLE','STAIR','HOUSE','MOUSE','STONE','PHONE','ALONE','CLONE','DRONE','PRONE',
+        'SHONE','THRONE','SMILE','STYLE','TRIAL','TRAIL','FINAL','VITAL','TOTAL','LOCAL',
+        'VOCAL','FOCAL','MORAL','CORAL','ROYAL','LOYAL','LEGAL','REGAL','EQUAL','USUAL',
+        'IDEAL','REALM','STEAM','DREAM','CREAM','GLEAM','BEAMS','SEAMS','TEAMS','CLEAN',
+        'CLEAR','CHEAP','CHEAT','WHEAT','TREAT','GREAT','SWEAT','STEAK','SPEAK','BREAK',
+        'FREAK','CREAK','SNEAK','WREAK','PEAKS','LEAKS','BEAKS','WEAKS','WEEKS','CHEEK',
+        'CREEK','GREEK','SLEEK','MEEKS','SEEKS','PEEKS','REEKS','THINK','THANK','DRINK',
+        'DRANK','DRUNK','BLANK','BLINK','CLANK','CLINK','FLANK','FRANK','PLANK','PRANK',
+        'SHANK','SPANK','STANK','SWANK','TRUNK','SKUNK','SLUNK','SPUNK','STUNK','CHUNK',
+        'PLUNK','BRING','BRINK','SLING','SLINK','STING','STINK','SWING','THING','WRING',
+        'CLING','FLING','SHING','SINGE','BINGE','HINGE','TINGE','TWINGE','RINGE','RINGS',
+        'KINGS','SINGS','WINGS','DINGS','PINGS','ZINGS','SONGS','LONGS','TONGS','GONGS',
+        'BANKS','RANKS','TANKS','YANKS','SANKS','HANKS','LINKS','MINKS','PINKS','RINKS',
+        'SINKS','WINKS','ZINCS','BONDS','FONDS','PONDS','ROUNDS','SOUND','FOUND','BOUND',
+        'HOUND','MOUND','POUND','ROUND','WOUND','COUNT','MOUNT','FOUNT','POINT','JOINT',
+        'PRINT','FLINT','GLINT','SHINT','STINT','SPLINT','SPRINT','FRONT','BLUNT','BRUNT',
+        'GRUNT','SHUNT','STUNT','TAUNT','HAUNT','DAUNT','GAUNT','JAUNT','VAUNT','AUNTS',
+        'HUNTS','BUNTS','PUNTS','RUNTS','PANTS','RANTS','WANTS','CENTS','DENTS','LENTS',
+        'RENTS','TENTS','VENTS','HINTS','LINTS','MINTS','TINTS','FONTS','DONTS','WONTS',
+        'MUSIC','MAGIC','LOGIC','TOPIC','TOXIC','TONIC','SONIC','COMIC','CONIC','PANIC',
+        'MANIC','TUNIC','CYNIC','LYRIC','BASIC','CIVIC','MIMIC','RELIC','MEDIC','ETHIC',
+        'ATTIC','OPTIC','ANTIC','ARCTIC','EXOTIC','PUBLIC','METRIC','FABRIC','GARLIC',
+        'PLASTIC','OCEAN','BEACH','PEACH','REACH','TEACH','LEACH','COACH','POACH','ROACH',
+        'BROACH','BENCH','CLENCH','DRENCH','FRENCH','QUENCH','STENCH','TRENCH','WRENCH',
+        'LUNCH','BUNCH','CRUNCH','HUNCH','MUNCH','PUNCH','PINCH','CINCH','FINCH','WINCH',
+        'LYNCH','TORCH','PORCH','SCORCH','MARCH','PARCH','STARCH','LARCH','BIRTH','WORTH',
+        'FIFTH','SIXTH','TENTH','DEPTH','WIDTH','MONTH','YOUTH','TRUTH','SOUTH','NORTH',
+        'CLOUD','PROUD','ALOUD','CROWD','SHROUD','FLOUR','SCOUR','HOURS','POURS','SOURS',
+        'TOURS','YOURS','FOURS','TOWER','POWER','LOWER','MOWER','ROWER','SOWER','BOWER',
+        'COWER','DOWER','RIVER','GIVER','LIVER','DIVER','SHIVER','QUIVER','SILVER','NEVER',
+        'EVER','FEVER','LEVER','SEVER','COVER','HOVER','LOVER','MOVER','ROVER','DOVER',
+        'WOVEN','OVENS','EVENT','EVERY','EXTRA','ENTRY','ENJOY','EMPTY','ENEMY','ENDED',
+        'ENTER','ELDER','OLDER','UNDER','ORDER','OTHER','OTTER','UTTER','OUTER','AFTER',
+        'ALTER','AMBER','ANGER','ANGLE','ANKLE','APPLE','APPLY','ARENA','ARGUE','ARISE',
+        'ARMED','AROMA','AROSE','ARRAY','ARROW','ASIDE','ASKED','ASSET','ATLAS','ATTIC',
+        'AUDIO','AUDIT','AVOID','AWAIT','AWAKE','AWARD','AWARE','AWFUL','AWOKE','AXIAL',
+        'BACON','BADGE','BADLY','BAGEL','BAGGY','BAKER','BALDY','BALER','BALMY','BANAL',
+        'BANJO','BARGE','BARON','BASAL','BASIL','BASIN','BASIS','BASTE','BATCH','BATHE',
+        'BATON','BATTY','BAWDY','BAYOU','BEADY','BEARD','BEAST','BEECH','BEEFY','BEFIT',
+        'BEGET','BEGUN','BEING','BELCH','BELIE','BELLE','BELLY','BELOW','BERET','BERTH',
+        'BESET','BETEL','BEVEL','BEZEL','BIBLE','BICEP','BIDDY','BIGOT','BILGE','BILLY',
+        'BINGE','BINGO','BIOME','BIRCH','BIRTH','BISON','BITTY','BLACK','BLADE','BLAME',
+        'BLAND','BLANK','BLARE','BLAST','BLAZE','BLEAK','BLEAT','BLEED','BLEEP','BLEND',
+        'BLESS','BLIMP','BLIND','BLINK','BLISS','BLITZ','BLOAT','BLOCK','BLOKE','BLOND',
+        'BLOOD','BLOOM','BLOWN','BLUER','BLUFF','BLUNT','BLURB','BLURT','BLUSH','BOARD',
+        'BOAST','BOBBY','BONEY','BONGO','BONUS','BOOBY','BOOST','BOOTH','BOOTY','BOOZE',
+        'BOOZY','BORAX','BORNE','BOSOM','BOSSY','BOTCH','BOUGH','BOULE','BOUND','BOWEL',
+        'BOXER','BRACE','BRAID','BRAIN','BRAKE','BRAND','BRASH','BRASS','BRAVE','BRAVO',
+        'BRAWL','BRAWN','BREAD','BREAK','BREED','BRIAR','BRIBE','BRICK','BRIDE','BRIEF',
+        'BRINE','BRING','BRINK','BRINY','BRISK','BROAD','BROIL','BROKE','BROOD','BROOK',
+        'BROOM','BROTH','BROWN','BRUNT','BRUSH','BRUTE','BUDDY','BUDGE','BUGGY','BUGLE',
+        'BUILD','BUILT','BULGE','BULKY','BULLY','BUNCH','BUNNY','BURLY','BURNT','BURST',
+        'BUSED','BUSHY','BUTCH','BUTTE','BUXOM','BUYER','BYLAW','CABAL','CABBY','CABIN',
+        'CABLE','CACAO','CACHE','CACTI','CADDY','CADET','CAGEY','CAIRN','CAMEL','CAMEO',
+        'CANAL','CANDY','CANNY','CANOE','CANON','CAPER','CAPUT','CARAT','CARGO','CAROL',
+        'CARRY','CARVE','CASTE','CATCH','CATER','CATTY','CAULK','CAUSE','CAVIL','CEASE',
+        'CEDAR','CELLO','CHAFE','CHAFF','CHAIN','CHAIR','CHALK','CHAMP','CHANT','CHAOS',
+        'CHARD','CHARM','CHART','CHASE','CHASM','CHEAP','CHEAT','CHECK','CHEEK','CHEER',
+        'CHESS','CHEST','CHICK','CHIDE','CHIEF','CHILD','CHILI','CHILL','CHIME','CHINA',
+        'CHIRP','CHOCK','CHOIR','CHOKE','CHORD','CHORE','CHOSE','CHUCK','CHUMP','CHUNK',
+        'CHURN','CHUTE','CIDER','CIGAR','CINCH','CIRCA','CIVIC','CIVIL','CLACK','CLAIM',
+        'CLAMP','CLANG','CLANK','CLASH','CLASP','CLASS','CLEAN','CLEAR','CLEAT','CLEFT',
+        'CLERK','CLICK','CLIFF','CLIMB','CLING','CLINK','CLOAK','CLOCK','CLONE','CLOSE',
+        'CLOTH','CLOUD','CLOUT','CLOVE','CLOWN','CLUCK','CLUED','CLUMP','CLUNG','COACH',
+        'COAST','COBRA','COCOA','COLON','COMET','COMFY','COMIC','COMMA','CONCH','CONDO',
+        'CONIC','COPSE','CORAL','CORER','CORNY','COUCH','COUGH','COULD','COUNT','COUPE',
+        'COURT','COVEN','COVER','COVET','COVEY','COWER','COYLY','CRACK','CRAFT','CRAMP',
+        'CRANE','CRANK','CRASH','CRASS','CRATE','CRAVE','CRAWL','CRAZE','CRAZY','CREAK',
+        'CREAM','CREDO','CREED','CREEK','CREEP','CREME','CREPE','CREPT','CRESS','CREST',
+        'CRICK','CRIED','CRIER','CRIME','CRIMP','CRISP','CROAK','CROCK','CRONE','CRONY',
+        'CROOK','CROSS','CROUP','CROWD','CROWN','CRUDE','CRUEL','CRUMB','CRUMP','CRUSH',
+        'CRUST','CRYPT','CUBIC','CUMIN','CURIO','CURLY','CURRY','CURSE','CURVE','CURVY',
+        'CUTIE','CYBER','CYCLE','CYNIC','DADDY','DAILY','DAIRY','DAISY','DALLY','DANCE',
+        'DANDY','DATUM','DAUNT','DEALT','DEATH','DEBAR','DEBIT','DEBUG','DEBUT','DECAL',
+        'DECAY','DECOR','DECOY','DECRY','DEFER','DEIGN','DEITY','DELAY','DELTA','DELVE',
+        'DEMON','DEMUR','DENIM','DENSE','DEPOT','DEPTH','DERBY','DETER','DETOX','DEUCE',
+        'DEVIL','DIARY','DICEY','DIGIT','DILLY','DIMLY','DINER','DINGO','DINGY','DIODE',
+        'DIRGE','DIRTY','DISCO','DITCH','DITTO','DITTY','DIVER','DIZZY','DODGE','DODGY',
+        'DOGMA','DOING','DOLLY','DONOR','DOPEY','DOUBT','DOUGH','DOWDY','DOWEL','DOWNY',
+        'DOWRY','DOZEN','DRAFT','DRAIN','DRAKE','DRAMA','DRANK','DRAPE','DRAWL','DRAWN',
+        'DREAD','DREAM','DRESS','DRIED','DRIER','DRIFT','DRILL','DRINK','DRIVE','DROIT',
+        'DROLL','DRONE','DROOL','DROOP','DROSS','DROVE','DROWN','DRUID','DRUNK','DRYER',
+        'DRYLY','DUCHY','DULLY','DUMMY','DUMPY','DUNCE','DUSKY','DUSTY','DUTCH','DUVET',
+        'DWARF','DWELL','DWELT','DYING','EAGER','EAGLE','EARLY','EARTH','EASEL','EATEN',
+        'EATER','EBONY','ECLAT','EDICT','EDIFY','EERIE','EGRET','EIGHT','EJECT','EKING',
+        'ELATE','ELBOW','ELDER','ELECT','ELEGY','ELFIN','ELIDE','ELITE','ELOPE','ELUDE',
+        'EMAIL','EMBED','EMBER','EMCEE','EMPTY','ENACT','ENDOW','ENEMA','ENEMY','ENJOY',
+        'ENNUI','ENSUE','ENTER','ENTRY','ENVOY','EPOCH','EPOXY','EQUAL','EQUIP','ERASE',
+        'ERECT','ERODE','ERROR','ERUPT','ESSAY','ESTER','ETHER','ETHIC','ETHOS','ETUDE',
+        'EVADE','EVENT','EVERY','EVICT','EVOKE','EXACT','EXALT','EXCEL','EXERT','EXILE',
+        'EXIST','EXPEL','EXTOL','EXTRA','EXULT','EYING','FABLE','FACET','FAINT','FAIRY',
+        'FAITH','FALSE','FANCY','FANNY','FARCE','FATAL','FATTY','FAULT','FAUNA','FEAST',
+        'FECAL','FEIGN','FELLA','FELON','FEMME','FEMUR','FENCE','FERAL','FERRY','FETAL',
+        'FETCH','FETID','FETUS','FEVER','FEWER','FICUS','FIELD','FIEND','FIERY','FIFTH',
+        'FIFTY','FIGHT','FILER','FILET','FILLY','FILMY','FILTH','FINAL','FINCH','FINER',
+        'FIRST','FISHY','FIXER','FIZZY','FJORD','FLACK','FLAIL','FLAIR','FLAKE','FLAKY',
+        'FLAME','FLANK','FLARE','FLASH','FLASK','FLECK','FLEET','FLESH','FLICK','FLIER',
+        'FLING','FLINT','FLIRT','FLOAT','FLOCK','FLOOD','FLOOR','FLORA','FLOSS','FLOUR',
+        'FLOUT','FLOWN','FLUFF','FLUID','FLUKE','FLUME','FLUNG','FLUNK','FLUSH','FLUTE',
+        'FLYER','FOAMY','FOCAL','FOCUS','FOGGY','FOIST','FOLIO','FOLLY','FORAY','FORCE',
+        'FORGE','FORGO','FORTE','FORTH','FORTY','FORUM','FOUND','FOYER','FRAIL','FRAME',
+        'FRANK','FRAUD','FREAK','FREED','FREER','FRESH','FRIAR','FRIED','FRILL','FRISK',
+        'FRITZ','FROCK','FROND','FRONT','FROST','FROTH','FROWN','FROZE','FRUIT','FUDGE',
+        'FUGUE','FULLY','FUNGI','FUNKY','FUNNY','FUROR','FURRY','FUSSY','FUZZY','GAFFE',
+        'GAILY','GAMER','GAMMA','GAMUT','GASSY','GAUDY','GAUGE','GAUNT','GAUZE','GAVEL',
+        'GAWKY','GAYER','GAYLY','GAZER','GECKO','GEEKY','GEESE','GENIE','GENRE','GHOST',
+        'GHOUL','GIANT','GIDDY','GIRLY','GIRTH','GIVEN','GIVER','GLADE','GLAND','GLARE',
+        'GLASS','GLAZE','GLEAM','GLEAN','GLIDE','GLINT','GLOAT','GLOBE','GLOOM','GLORY',
+        'GLOSS','GLOVE','GLYPH','GNASH','GNOME','GODLY','GOING','GOLEM','GOLLY','GONAD',
+        'GONER','GOODY','GOOEY','GOOFY','GOOSE','GORGE','GOUGE','GOURD','GRACE','GRADE',
+        'GRAFT','GRAIL','GRAIN','GRAND','GRANT','GRAPE','GRAPH','GRASP','GRASS','GRATE',
+        'GRAVE','GRAVY','GRAZE','GREAT','GREED','GREEN','GREET','GRIEF','GRILL','GRIME',
+        'GRIMY','GRIND','GRIPE','GROAN','GROIN','GROOM','GROPE','GROSS','GROUP','GROUT',
+        'GROVE','GROWL','GROWN','GRUEL','GRUFF','GRUNT','GUARD','GUAVA','GUESS','GUEST',
+        'GUIDE','GUILD','GUILE','GUILT','GUISE','GULCH','GULLY','GUMBO','GUMMY','GUPPY',
+        'GUSTO','GUSTY','GYPSY','HABIT','HAIRY','HALVE','HANDY','HAPPY','HARDY','HAREM',
+        'HARPY','HARRY','HARSH','HASTE','HASTY','HATCH','HATER','HAUNT','HAUTE','HAVEN',
+        'HAVOC','HAZEL','HEADY','HEARD','HEART','HEATH','HEAVE','HEAVY','HEDGE','HEFTY',
+        'HEIST','HELIX','HELLO','HENCE','HERON','HILLY','HINGE','HIPPO','HIPPY','HITCH',
+        'HOARD','HOBBY','HOIST','HOLLY','HOMER','HONEY','HORDE','HORNY','HORSE','HOTEL',
+        'HOTLY','HOUND','HOUSE','HOVEL','HOVER','HOWDY','HUMAN','HUMID','HUMPH','HUMUS',
+        'HUNCH','HUNKY','HURRY','HUSKY','HUSSY','HUTCH','HYDRO','HYENA','HYMEN','HYPER',
+        'ICILY','ICING','IDEAL','IDIOM','IDIOT','IDLER','IDYLL','IGLOO','ILIAC','IMAGE',
+        'IMBUE','IMPEL','IMPLY','INANE','INBOX','INCUR','INDEX','INEPT','INERT','INFER',
+        'INGOT','INLAY','INLET','INNER','INPUT','INTER','INTRO','IONIC','IRATE','IRONY',
+        'ISLET','ISSUE','ITCHY','IVORY','JAUNT','JAZZY','JELLY','JERKY','JETTY','JEWEL',
+        'JIFFY','JOINT','JOIST','JOKER','JOLLY','JOUST','JUDGE','JUICE','JUICY','JUMBO',
+        'JUMPY','JUNTA','JUNTO','JUROR','KAPPA','KARMA','KAYAK','KEBAB','KHAKI','KINKY',
+        'KIOSK','KITTY','KNACK','KNAVE','KNEAD','KNEEL','KNEEL','KNELT','KNIFE','KNOCK',
+        'KNOLL','KNOWN','KOALA','KRILL','LABEL','LADEN','LADLE','LAGER','LANCE','LANKY',
+        'LAPEL','LAPSE','LARGE','LARVA','LASSO','LATCH','LATER','LATHE','LATTE','LAUGH',
+        'LAYER','LEACH','LEAFY','LEAKY','LEANT','LEAPT','LEARN','LEASE','LEASH','LEAST',
+        'LEAVE','LEDGE','LEECH','LEERY','LEFTY','LEGAL','LEGGY','LEMON','LEMUR','LEPER',
+        'LEVEL','LEVER','LIBEL','LIEGE','LIGHT','LIKEN','LILAC','LIMBO','LIMIT','LINEN',
+        'LINER','LINGO','LIPID','LITHE','LIVER','LIVID','LLAMA','LOAMY','LOATH','LOBBY',
+        'LOCAL','LOCUS','LODGE','LOFTY','LOGIC','LOGIN','LOOPY','LOOSE','LORRY','LOSER',
+        'LOUSE','LOUSY','LOVER','LOWER','LOWLY','LOYAL','LUCID','LUCKY','LUMEN','LUMPY',
+        'LUNAR','LUNCH','LUNGE','LUPUS','LURCH','LURID','LUSTY','LYING','LYMPH','LYNCH',
+        'LYRIC','MACAW','MACHO','MACRO','MADAM','MADLY','MAFIA','MAGIC','MAGMA','MAIZE',
+        'MAJOR','MAKER','MAMBO','MAMMA','MAMMY','MANGA','MANGE','MANGO','MANGY','MANIA',
+        'MANIC','MANLY','MANOR','MAPLE','MARCH','MARRY','MARSH','MASON','MASSE','MATCH',
+        'MATEY','MAUVE','MAXIM','MAYBE','MAYOR','MEALY','MEANT','MEATY','MECCA','MEDAL',
+        'MEDIA','MEDIC','MELEE','MELON','MERCY','MERGE','MERIT','MERRY','METAL','METER',
+        'METRO','MICRO','MIDGE','MIDST','MIGHT','MILKY','MIMIC','MINCE','MINER','MINIM',
+        'MINOR','MINTY','MINUS','MIRTH','MISER','MISSY','MOCHA','MODAL','MODEL','MODEM',
+        'MOGUL','MOIST','MOLAR','MONEY','MONTH','MOODY','MOOSE','MORAL','MORON','MORPH',
+        'MOSSY','MOTEL','MOTIF','MOTOR','MOTTO','MOULT','MOUND','MOUNT','MOURN','MOUSE',
+        'MOUTH','MOVER','MOVIE','MOWER','MUCKY','MUCUS','MUDDY','MULCH','MUMMY','MUNCH',
+        'MURAL','MURKY','MUSHY','MUSIC','MUSKY','MUSTY','MYRRH','NADIR','NAIVE','NANNY',
+        'NASAL','NASTY','NATAL','NAVAL','NAVEL','NEEDY','NEIGH','NERDY','NERVE','NEVER',
+        'NEWER','NEWLY','NICER','NICHE','NIECE','NIGHT','NINJA','NINNY','NINTH','NOBLE',
+        'NOBLY','NOISE','NOISY','NOMAD','NOOSE','NORTH','NOSEY','NOTCH','NOVEL','NUDGE',
+        'NURSE','NUTTY','NYLON','NYMPH','OAKEN','OBESE','OCCUR','OCEAN','OCTAL','OCTET',
+        'ODDER','ODDLY','OFFAL','OFFER','OFTEN','OLDEN','OLDER','OLIVE','OMBRE','OMEGA',
+        'ONION','ONSET','OPERA','OPINE','OPIUM','OPTIC','ORBIT','ORDER','ORGAN','OTHER',
+        'OTTER','OUGHT','OUNCE','OUTDO','OUTER','OUTGO','OVARY','OVATE','OVERT','OVINE',
+        'OVOID','OWING','OWNER','OXIDE','OZONE','PADDY','PAGAN','PAINT','PALER','PALSY',
+        'PANEL','PANIC','PANSY','PAPAL','PAPER','PARER','PARKA','PARRY','PARSE','PARTY',
+        'PASTA','PASTE','PASTY','PATCH','PATIO','PATSY','PATTY','PAUSE','PAYEE','PAYER',
+        'PEACE','PEACH','PEARL','PECAN','PEDAL','PENAL','PENCE','PENNE','PENNY','PERCH',
+        'PERIL','PERKY','PESKY','PESTO','PETAL','PETTY','PHASE','PHONE','PHONY','PHOTO',
+        'PIANO','PICKY','PIECE','PIETY','PIGGY','PILOT','PINCH','PINEY','PINKY','PINTO',
+        'PIPER','PIQUE','PITCH','PITHY','PIVOT','PIXEL','PIXIE','PIZZA','PLACE','PLAID',
+        'PLAIN','PLAIT','PLANE','PLANK','PLANT','PLATE','PLAZA','PLEAD','PLEAT','PLIED',
+        'PLIER','PLUCK','PLUMB','PLUME','PLUMP','PLUNK','PLUSH','POESY','POINT','POISE',
+        'POKER','POLAR','POLKA','POLYP','POOCH','POPPY','PORCH','POSER','POSIT','POSSE',
+        'POUCH','POUND','POUTY','POWER','PRANK','PRAWN','PREEN','PRESS','PRICE','PRICK',
+        'PRIDE','PRIED','PRIME','PRIMO','PRINT','PRIOR','PRISM','PRIVY','PRIZE','PROBE',
+        'PRONE','PRONG','PROOF','PROSE','PROUD','PROVE','PROWL','PROXY','PRUDE','PRUNE',
+        'PSALM','PUBIC','PUDGY','PUFFY','PULPY','PULSE','PUNCH','PUPAL','PUPIL','PUPPY',
+        'PUREE','PURER','PURGE','PURSE','PUSHY','PUTTY','PYGMY','QUACK','QUAIL','QUAKE',
+        'QUALM','QUARK','QUART','QUASH','QUASI','QUEEN','QUEER','QUELL','QUERY','QUEST',
+        'QUEUE','QUICK','QUIET','QUILL','QUILT','QUIRK','QUITE','QUOTA','QUOTE','QUOTH',
+        'RABBI','RABID','RACER','RADAR','RADII','RADIO','RAINY','RAISE','RAJAH','RALLY',
+        'RALPH','RAMEN','RANCH','RANDY','RANGE','RAPID','RARER','RASPY','RATIO','RATTY',
+        'RAVEN','RAYON','RAZOR','REACH','REACT','READY','REALM','REARM','REBAR','REBEL',
+        'REBUS','REBUT','RECAP','RECUR','RECUT','REEDY','REFER','REFIT','REGAL','REHAB',
+        'REIGN','RELAX','RELAY','RELIC','REMIT','RENAL','RENEW','REPAY','REPEL','REPLY',
+        'RERUN','RESET','RESIN','RETCH','RETRO','RETRY','REUSE','REVEL','REVUE','RHINO',
+        'RHYME','RIDER','RIDGE','RIFLE','RIGHT','RIGID','RINSE','RIPEN','RIPER','RISEN',
+        'RISER','RISKY','RIVAL','RIVER','RIVET','ROACH','ROAST','ROBIN','ROBOT','ROCKY',
+        'RODEO','ROGER','ROGUE','ROOMY','ROOST','ROTOR','ROUGE','ROUGH','ROUND','ROUSE',
+        'ROUTE','ROVER','ROWDY','ROWER','ROYAL','RUDDY','RUDER','RUGBY','RULER','RUMBA',
+        'RUPEE','RURAL','RUSTY','SADLY','SAFER','SAINT','SALAD','SALLY','SALON','SALSA',
+        'SALTY','SALVE','SALVO','SANDY','SANER','SAPPY','SASSY','SATIN','SATYR','SAUCE',
+        'SAUCY','SAUNA','SAUTE','SAVOY','SAVVY','SCALD','SCALE','SCALP','SCALY','SCAMP',
+        'SCANT','SCARE','SCARF','SCARY','SCENE','SCENT','SCION','SCOFF','SCOLD','SCONE',
+        'SCOOP','SCOPE','SCORE','SCORN','SCOUR','SCOUT','SCOWL','SCRAM','SCRAP','SCREE',
+        'SCREW','SCRUB','SCRUM','SCUBA','SEDAN','SEEDY','SEGUE','SEIZE','SEMEN','SENSE',
+        'SEPIA','SERIF','SERUM','SERVE','SETUP','SEVEN','SEVER','SEWER','SHACK','SHADE',
+        'SHADY','SHAFT','SHAKE','SHAKY','SHALE','SHALL','SHALT','SHAME','SHANK','SHAPE',
+        'SHARD','SHARE','SHARK','SHARP','SHAVE','SHAWL','SHEAF','SHEAR','SHEEN','SHEEP',
+        'SHEER','SHEET','SHEIK','SHELF','SHELL','SHIED','SHIFT','SHINE','SHINY','SHIRE',
+        'SHIRK','SHIRT','SHOAL','SHOCK','SHONE','SHOOK','SHOOT','SHORE','SHORN','SHORT',
+        'SHOUT','SHOVE','SHOWN','SHOWY','SHREW','SHRUB','SHRUG','SHUCK','SHUNT','SHUSH',
+        'SHYLY','SIEGE','SIEVE','SIGHT','SIGMA','SILKY','SILLY','SINCE','SINEW','SINGE',
+        'SIREN','SISSY','SIXTH','SIXTY','SKATE','SKIER','SKIFF','SKILL','SKIMP','SKIRT',
+        'SKULK','SKULL','SKUNK','SLACK','SLAIN','SLANG','SLANT','SLASH','SLATE','SLAVE',
+        'SLEEK','SLEEP','SLEET','SLEPT','SLICE','SLICK','SLIDE','SLIME','SLIMY','SLING',
+        'SLINK','SLOOP','SLOPE','SLOSH','SLOTH','SLUMP','SLUNG','SLUNK','SLURP','SLUSH',
+        'SLYLY','SMACK','SMALL','SMART','SMASH','SMEAR','SMELL','SMELT','SMILE','SMIRK',
+        'SMITE','SMITH','SMOCK','SMOKE','SMOKY','SMOTE','SNACK','SNAIL','SNAKE','SNAKY',
+        'SNARE','SNARL','SNEAK','SNEER','SNIDE','SNIFF','SNIPE','SNOOP','SNORE','SNORT',
+        'SNOUT','SNOWY','SNUCK','SNUFF','SOAPY','SOBER','SOGGY','SOLAR','SOLID','SOLVE',
+        'SONAR','SONIC','SOOTH','SOOTY','SORRY','SOUND','SOUTH','SOWER','SPACE','SPADE',
+        'SPANK','SPARE','SPARK','SPASM','SPAWN','SPEAK','SPEAR','SPECK','SPEED','SPELL',
+        'SPELT','SPEND','SPENT','SPERM','SPICE','SPICY','SPIED','SPIEL','SPIKE','SPIKY',
+        'SPILL','SPILT','SPINE','SPINY','SPIRE','SPITE','SPLAT','SPLIT','SPOIL','SPOKE',
+        'SPOOF','SPOOK','SPOOL','SPOON','SPORE','SPORT','SPOUT','SPRAY','SPREE','SPRIG',
+        'SPUNK','SPURN','SPURT','SQUAD','SQUAT','SQUIB','STACK','STAFF','STAGE','STAID',
+        'STAIN','STAIR','STAKE','STALE','STALK','STALL','STAMP','STAND','STANK','STARE',
+        'STARK','START','STASH','STATE','STAVE','STEAD','STEAK','STEAL','STEAM','STEED',
+        'STEEL','STEEP','STEER','STEIN','STERN','STICK','STIFF','STILL','STILT','STING',
+        'STINK','STINT','STOCK','STOIC','STOKE','STOLE','STOMP','STONE','STONY','STOOD',
+        'STOOL','STOOP','STORE','STORK','STORM','STORY','STOUT','STOVE','STRAP','STRAW',
+        'STRAY','STRIP','STRUT','STUCK','STUDY','STUFF','STUMP','STUNG','STUNK','STUNT',
+        'STYLE','SUAVE','SUGAR','SUING','SUITE','SULKY','SULLY','SUMAC','SUNNY','SUPER',
+        'SURER','SURGE','SURLY','SUSHI','SWAMI','SWAMP','SWARM','SWASH','SWATH','SWEAR',
+        'SWEAT','SWEEP','SWEET','SWELL','SWEPT','SWIFT','SWILL','SWINE','SWING','SWIRL',
+        'SWISH','SWOON','SWOOP','SWORD','SWORE','SWORN','SWUNG','SYNOD','SYRUP','TABBY',
+        'TABLE','TABOO','TACIT','TACKY','TAFFY','TAINT','TAKEN','TAKER','TALLY','TALON',
+        'TAMER','TANGO','TANGY','TAPER','TAPIR','TARDY','TAROT','TASTE','TASTY','TATTY',
+        'TAUNT','TAWNY','TEACH','TEARY','TEASE','TEDDY','TEETH','TEMPO','TENET','TENOR',
+        'TENSE','TENTH','TEPEE','TEPID','TERRA','TERSE','TESTY','THANK','THEFT','THEIR',
+        'THEME','THERE','THESE','THETA','THICK','THIEF','THIGH','THING','THINK','THIRD',
+        'THONG','THORN','THOSE','THREE','THREW','THROB','THROW','THRUM','THUMB','THUMP',
+        'THYME','TIARA','TIBIA','TIDAL','TIGER','TIGHT','TILDE','TIMER','TIMID','TIPSY',
+        'TITAN','TITHE','TITLE','TOAST','TODAY','TODDY','TOKEN','TONAL','TONGA','TONIC',
+        'TOOTH','TOPAZ','TOPIC','TORCH','TORSO','TORUS','TOTAL','TOTEM','TOUCH','TOUGH',
+        'TOWEL','TOWER','TOXIC','TOXIN','TRACE','TRACK','TRACT','TRADE','TRAIL','TRAIN',
+        'TRAIT','TRAMP','TRASH','TRAWL','TREAD','TREAT','TREND','TRIAD','TRIAL','TRIBE',
+        'TRICE','TRICK','TRIED','TRIPE','TRITE','TROLL','TROOP','TROPE','TROUT','TROVE',
+        'TRUCE','TRUCK','TRUER','TRULY','TRUMP','TRUNK','TRUSS','TRUST','TRUTH','TRYST',
+        'TUBAL','TUBER','TULIP','TULLE','TUNIC','TURBO','TUTOR','TWANG','TWEAK','TWEED',
+        'TWEET','TWICE','TWINE','TWIRL','TWIST','TWIXT','TYING','UDDER','ULCER','ULTRA',
+        'UMBRA','UNCLE','UNCUT','UNDER','UNDID','UNDUE','UNFED','UNFIT','UNIFY','UNION',
+        'UNITE','UNITY','UNLIT','UNMET','UNSET','UNTIE','UNTIL','UNWED','UNZIP','UPPER',
+        'UPSET','URBAN','URINE','USAGE','USHER','USING','USUAL','USURP','UTILE','UTTER',
+        'VAGUE','VALET','VALID','VALUE','VALVE','VAPID','VAULT','VAUNT','VEGAN','VENOM',
+        'VENUE','VERGE','VERSE','VERSO','VERVE','VICAR','VIDEO','VIGIL','VILLA','VINYL',
+        'VIOLA','VIPER','VIRAL','VIRUS','VISIT','VISOR','VISTA','VITAL','VIVID','VIXEN',
+        'VOCAL','VODKA','VOGUE','VOICE','VOILA','VOMIT','VOTER','VOUCH','VOWEL','VYING',
+        'WACKY','WAFER','WAGER','WAGON','WAIST','WAIVE','WALTZ','WARTY','WASTE','WATCH',
+        'WATER','WAVER','WAXEN','WEARY','WEAVE','WEDGE','WEEDY','WEIGH','WEIRD','WELCH',
+        'WELSH','WENCH','WHACK','WHALE','WHARF','WHEAT','WHEEL','WHELP','WHERE','WHICH',
+        'WHIFF','WHILE','WHINE','WHINY','WHIRL','WHISK','WHITE','WHOLE','WHOOP','WHOSE',
+        'WIDEN','WIDER','WIDOW','WIDTH','WIELD','WIGHT','WILLY','WIMPY','WINCE','WINCH',
+        'WINDY','WISER','WISPY','WITCH','WITTY','WOKEN','WOMAN','WOMEN','WOODY','WOOER',
+        'WOOZY','WORDY','WORLD','WORRY','WORSE','WORST','WORTH','WOULD','WOUND','WOVEN',
+        'WRACK','WRATH','WREAK','WRECK','WREST','WRING','WRIST','WRITE','WRONG','WROTE',
+        'WRUNG','WRYLY','YACHT','YEARN','YEAST','YIELD','YOUNG','YOUTH','ZEBRA','ZESTY',
+        'ZONAL'
+      ];
+
+      const UK_DICTIONARY = new Set(
+        WORD_BANK.concat(UK_EXTRA_VALID_WORDS)
+          .filter(w => w.length === 5 && !US_ONLY_WORDS.has(w))
+      );
+
+      // Secret words are strictly UK English 5-letter isograms
+      const SECRET_WORDS = Array.from(UK_DICTIONARY).filter(w => new Set(w).size === 5);
+
+      const INVALID_CACHE = new Set();
+
+      async function validateUKEnglishWord(word) {
+        if (US_ONLY_WORDS.has(word)) {
+          return {
+            valid: false,
+            reason: `"${word}" is not a valid word — please correct it.`
+          };
+        }
+        if (UK_DICTIONARY.has(word)) {
+          return { valid: true };
+        }
+        if (INVALID_CACHE.has(word)) {
+          return {
+            valid: false,
+            reason: `"${word}" is not a valid word — please correct it.`
+          };
+        }
+
+        // Live fallback check against public CORS-enabled dictionary API
+        try {
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 3000);
+          const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word.toLowerCase())}`, {
+            signal: controller.signal
+          });
+          clearTimeout(timer);
+
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data) && data.length > 0) {
+              // Check if every definition is explicitly a US-only variant
+              const defs = [];
+              data.forEach(entry => {
+                (entry.meanings || []).forEach(m => {
+                  (m.definitions || []).forEach(d => {
+                    if (d.definition) defs.push(d.definition);
+                  });
+                });
+              });
+              const allUSOnly = defs.length > 0 && defs.every(d =>
+                /(US|American|North American)\s+(spelling|form|variant)/i.test(d)
+              );
+              if (allUSOnly) {
+                US_ONLY_WORDS.add(word);
+                return {
+                  valid: false,
+                  reason: `"${word}" is not a valid word — please correct it.`
+                };
+              }
+              UK_DICTIONARY.add(word);
+              return { valid: true };
+            }
+          }
+          if (res.status === 404) {
+            INVALID_CACHE.add(word);
+          }
+        } catch (e) {
+          // Offline or timeout: fall back cleanly to built-in UK dictionary
+        }
+
+        return {
+          valid: false,
+          reason: `"${word}" is not a valid word — please correct it.`
+        };
+      }
+
+      const BULL_IMG = 'assets/bull.jpg';
+      const COW_IMG = 'assets/cow.jpg';
+
+      /* ========================
+         WEB AUDIO SYNTHESIZER (Zero External Audio Files)
+         ======================== */
+      const SoundFX = (() => {
+        let ctx = null;
+        let muted = false;
+
+        function ensureCtx() {
+          if (muted) return null;
+          if (!ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return null;
+            ctx = new AudioCtx();
+          }
+          if (ctx.state === 'suspended') {
+            ctx.resume().catch(() => {});
+          }
+          return ctx;
+        }
+
+        function tone(freq, type, duration, gainVal, delay = 0, endFreq = null) {
+          const c = ensureCtx();
+          if (!c) return;
+          const now = c.currentTime + delay;
+          const osc = c.createOscillator();
+          const gain = c.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, now);
+          if (endFreq) {
+            osc.frequency.exponentialRampToValueAtTime(endFreq, now + duration);
+          }
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.linearRampToValueAtTime(gainVal, now + 0.008);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+          osc.connect(gain);
+          gain.connect(c.destination);
+          osc.start(now);
+          osc.stop(now + duration + 0.02);
+        }
+
+        return {
+          setMuted(v) { muted = v; },
+          isMuted() { return muted; },
+          keyTap(col = 0) {
+            const notes = [440, 493.88, 554.37, 659.25, 739.99];
+            tone(notes[col % 5], 'square', 0.045, 0.06, 0, notes[col % 5] * 1.12);
+            tone(180, 'triangle', 0.03, 0.07, 0, 95);
+          },
+          backspace() {
+            tone(260, 'sawtooth', 0.06, 0.055, 0, 120);
+          },
+          markNote() {
+            tone(660, 'square', 0.045, 0.05, 0, 880);
+          },
+          errorShake() {
+            tone(150, 'sawtooth', 0.1, 0.09, 0, 92);
+            tone(110, 'square', 0.13, 0.08, 0.09, 72);
+          },
+          flipSweep() {
+            [330, 440, 554.37, 659.25, 880].forEach((f, idx) => {
+              tone(f, 'sawtooth', 0.075, 0.045, idx * 0.065, f * 1.06);
+            });
+          },
+          bullChime(count) {
+            const scale = [523.25, 659.25, 783.99, 1046.5, 1318.5];
+            for (let i = 0; i < count; i++) {
+              const d = i * 0.095;
+              tone(scale[i], 'sawtooth', 0.24, 0.08, d);
+              tone(scale[i] * 1.5, 'square', 0.18, 0.045, d);
+            }
+          },
+          cowChime(count, offsetDelay = 0) {
+            const scale = [587.33, 698.46, 880, 987.77, 1174.66];
+            for (let i = 0; i < count; i++) {
+              const d = offsetDelay + i * 0.085;
+              tone(scale[i], 'triangle', 0.2, 0.09, d, scale[i] * 1.08);
+            }
+          },
+          zeroMatch() {
+            tone(196, 'sawtooth', 0.18, 0.07, 0, 130);
+            tone(130, 'square', 0.22, 0.06, 0.12, 98);
+          },
+          hintSparkle() {
+            [523.25, 659.25, 783.99, 1046.5, 1567.98].forEach((f, i) => {
+              tone(f, 'square', 0.16, 0.055, i * 0.055);
+            });
+          },
+          victory() {
+            const arp = [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98];
+            arp.forEach((f, i) => {
+              tone(f, 'sawtooth', 0.42, 0.08, i * 0.075);
+              tone(f * 0.5, 'square', 0.46, 0.055, i * 0.075);
+            });
+          },
+          defeat() {
+            const notes = [392, 349.23, 311.13, 233.08];
+            notes.forEach((f, i) => {
+              tone(f, 'sawtooth', 0.34, 0.08, i * 0.14, f * 0.92);
+            });
+          },
+          getContext() {
+            return ensureCtx();
+          }
+        };
+      })();
+
+      /* ========================
+         ORIGINAL LOW-VOLUME CATCHY RETRO-TRANCE ENGINE
+         (100% procedural Web Audio API — hypnotic 128 BPM melodic trance with dotted-8th delay)
+         ======================== */
+      const RetroMusic = (() => {
+        let enabled = true;
+        let running = false;
+        let timerId = null;
+        let step = 0;
+        let nextNoteTime = 0;
+        let noiseBuffer = null;
+        let musicBus = null;
+        let delayInput = null;
+
+        const BPM = 128;
+        const STEP_DUR = 60 / BPM / 4; // 16th-note step (~0.117s)
+
+        // 8-bar hypnotic melodic trance progression in F minor (Fm9 -> DbMaj7 -> AbMaj7 -> Eb6, x2 with evolving lead)
+        const BARS = [
+          // Phrase A (Bars 1-4: Hypnotic pulse & motif)
+          {
+            bass: 87.31, // F2
+            pad: [174.61, 207.65, 261.63, 311.13],
+            arp: [349.23, 415.30, 523.25, 622.25, 523.25, 415.30, 349.23, 523.25],
+            hook: { 0: 698.46, 3: 622.25, 6: 523.25, 10: 415.30, 12: 523.25, 14: 622.25 }
+          },
+          {
+            bass: 69.30, // Db2
+            pad: [138.59, 174.61, 207.65, 261.63],
+            arp: [277.18, 349.23, 415.30, 523.25, 415.30, 349.23, 277.18, 415.30],
+            hook: { 0: 554.37, 3: 523.25, 6: 415.30, 10: 349.23, 12: 415.30, 14: 523.25 }
+          },
+          {
+            bass: 103.83, // Ab2
+            pad: [207.65, 261.63, 311.13, 392.00],
+            arp: [415.30, 523.25, 622.25, 783.99, 622.25, 523.25, 415.30, 622.25],
+            hook: { 0: 830.61, 3: 783.99, 6: 622.25, 10: 523.25, 12: 622.25, 14: 783.99 }
+          },
+          {
+            bass: 77.78, // Eb2
+            pad: [155.56, 196.00, 233.08, 311.13],
+            arp: [311.13, 392.00, 466.16, 622.25, 466.16, 392.00, 311.13, 466.16],
+            hook: { 0: 622.25, 3: 587.33, 6: 466.16, 10: 392.00, 12: 466.16, 14: 523.25 }
+          },
+          // Phrase B (Bars 5-8: Uplifting hypnotic trance lift)
+          {
+            bass: 87.31,
+            pad: [174.61, 207.65, 261.63, 349.23],
+            arp: [349.23, 523.25, 622.25, 698.46, 622.25, 523.25, 415.30, 523.25],
+            hook: { 0: 698.46, 2: 830.61, 4: 783.99, 6: 698.46, 10: 622.25, 12: 698.46, 14: 830.61 }
+          },
+          {
+            bass: 69.30,
+            pad: [138.59, 174.61, 207.65, 277.18],
+            arp: [277.18, 415.30, 523.25, 554.37, 523.25, 415.30, 349.23, 415.30],
+            hook: { 0: 830.61, 3: 698.46, 6: 622.25, 10: 554.37, 12: 622.25, 14: 698.46 }
+          },
+          {
+            bass: 103.83,
+            pad: [207.65, 261.63, 311.13, 415.30],
+            arp: [415.30, 622.25, 783.99, 830.61, 783.99, 622.25, 523.25, 622.25],
+            hook: { 0: 1046.50, 3: 932.33, 6: 830.61, 10: 783.99, 12: 830.61, 14: 932.33 }
+          },
+          {
+            bass: 77.78,
+            pad: [155.56, 196.00, 233.08, 349.23],
+            arp: [311.13, 466.16, 622.25, 698.46, 622.25, 466.16, 392.00, 466.16],
+            hook: { 0: 932.33, 3: 830.61, 6: 783.99, 10: 698.46, 12: 622.25, 14: 523.25 }
+          }
+        ];
+
+        function ensureNodes(c) {
+          if (!musicBus) {
+            musicBus = c.createGain();
+            musicBus.gain.value = 0.34; // Low, hypnotic background volume
+            musicBus.connect(c.destination);
+
+            // Dotted-8th trance echo delay bus for shimmering space
+            delayInput = c.createGain();
+            delayInput.gain.value = 1.0;
+            const delay = c.createDelay(1.0);
+            delay.delayTime.value = STEP_DUR * 3; // Dotted 8th note!
+            const fb = c.createGain();
+            fb.gain.value = 0.42;
+            const dFilter = c.createBiquadFilter();
+            dFilter.type = 'lowpass';
+            dFilter.frequency.value = 2200;
+            const wet = c.createGain();
+            wet.gain.value = 0.46;
+
+            delayInput.connect(musicBus); // Dry
+            delayInput.connect(delay);
+            delay.connect(dFilter);
+            dFilter.connect(fb);
+            fb.connect(delay);
+            dFilter.connect(wet);
+            wet.connect(musicBus);
+          }
+          if (!noiseBuffer) {
+            const len = Math.floor(c.sampleRate * 0.16);
+            noiseBuffer = c.createBuffer(1, len, c.sampleRate);
+            const data = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+          }
+          return { bus: musicBus, echo: delayInput };
+        }
+
+        // Rolling sidechain-pumped 16th-note trance bassline
+        function playRollingBass(c, bus, freq, t, cutoffBoost) {
+          const osc = c.createOscillator();
+          const flt = c.createBiquadFilter();
+          const g = c.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, t);
+          flt.type = 'lowpass';
+          flt.Q.value = 3.2;
+          flt.frequency.setValueAtTime(340 + cutoffBoost, t);
+          flt.frequency.exponentialRampToValueAtTime(140, t + STEP_DUR * 0.92);
+          g.gain.setValueAtTime(0.0001, t);
+          g.gain.linearRampToValueAtTime(0.095, t + 0.006);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + STEP_DUR * 0.92);
+          osc.connect(flt);
+          flt.connect(g);
+          g.connect(bus);
+          osc.start(t);
+          osc.stop(t + STEP_DUR * 0.96);
+        }
+
+        // Detuned supersaw-style trance pluck routed into dotted-8th delay
+        function playTrancePluck(c, echo, freq, t, vol, cutoff) {
+          [-7, 7].forEach(detune => {
+            const osc = c.createOscillator();
+            const flt = c.createBiquadFilter();
+            const g = c.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(freq, t);
+            osc.detune.setValueAtTime(detune, t);
+            flt.type = 'lowpass';
+            flt.Q.value = 2.4;
+            flt.frequency.setValueAtTime(cutoff, t);
+            flt.frequency.exponentialRampToValueAtTime(420, t + STEP_DUR * 1.6);
+            g.gain.setValueAtTime(0.0001, t);
+            g.gain.linearRampToValueAtTime(vol, t + 0.006);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + STEP_DUR * 1.75);
+            osc.connect(flt);
+            flt.connect(g);
+            g.connect(echo);
+            osc.start(t);
+            osc.stop(t + STEP_DUR * 1.85);
+          });
+        }
+
+        // Lush gliding trance pad with gentle swell
+        function playTrancePad(c, bus, freqs, t) {
+          freqs.forEach((f, idx) => {
+            const osc = c.createOscillator();
+            const flt = c.createBiquadFilter();
+            const g = c.createGain();
+            osc.type = idx % 2 === 0 ? 'triangle' : 'sine';
+            osc.frequency.setValueAtTime(f, t);
+            osc.detune.setValueAtTime(idx % 2 === 0 ? -5 : 5, t);
+            flt.type = 'lowpass';
+            flt.frequency.setValueAtTime(650, t);
+            flt.frequency.linearRampToValueAtTime(1200, t + STEP_DUR * 8);
+            flt.frequency.linearRampToValueAtTime(700, t + STEP_DUR * 15.6);
+            g.gain.setValueAtTime(0.0001, t);
+            g.gain.linearRampToValueAtTime(0.017, t + STEP_DUR * 3);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + STEP_DUR * 15.8);
+            osc.connect(flt);
+            flt.connect(g);
+            g.connect(bus);
+            osc.start(t);
+            osc.stop(t + STEP_DUR * 16);
+          });
+        }
+
+        // Four-on-the-floor warm trance kick
+        function playKick(c, bus, t) {
+          const osc = c.createOscillator();
+          const g = c.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(132, t);
+          osc.frequency.exponentialRampToValueAtTime(42, t + 0.095);
+          g.gain.setValueAtTime(0.115, t);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
+          osc.connect(g);
+          g.connect(bus);
+          osc.start(t);
+          osc.stop(t + 0.14);
+        }
+
+        function playPerc(c, bus, t, kind) {
+          const src = c.createBufferSource();
+          src.buffer = noiseBuffer;
+          const flt = c.createBiquadFilter();
+          const g = c.createGain();
+          if (kind === 'clap') {
+            flt.type = 'bandpass';
+            flt.frequency.setValueAtTime(1800, t);
+            flt.Q.value = 1.2;
+            g.gain.setValueAtTime(0.036, t);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + 0.1);
+          } else if (kind === 'openHat') {
+            flt.type = 'highpass';
+            flt.frequency.setValueAtTime(6800, t);
+            g.gain.setValueAtTime(0.024, t);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + 0.075);
+          } else {
+            flt.type = 'highpass';
+            flt.frequency.setValueAtTime(8500, t);
+            g.gain.setValueAtTime(0.011, t);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + 0.028);
+          }
+          src.connect(flt);
+          flt.connect(g);
+          g.connect(bus);
+          src.start(t);
+          src.stop(t + 0.11);
+        }
+
+        function scheduleStep(c, sIdx, t) {
+          const { bus, echo } = ensureNodes(c);
+          const barIdx = Math.floor(sIdx / 16) % BARS.length;
+          const inBar = sIdx % 16;
+          const bar = BARS[barIdx];
+
+          // Slow 8-bar hypnotic filter wave (breathes open & closed)
+          const cycleWave = 0.5 - 0.5 * Math.cos((sIdx / 128) * Math.PI * 2);
+          const bassBoost = cycleWave * 360;
+          const pluckCutoff = 1350 + cycleWave * 1700;
+
+          // 1. Four-on-the-floor trance kick
+          if (inBar % 4 === 0) {
+            playKick(c, bus, t);
+          } else {
+            // 2. Classic rolling 16th-note trance bass (pumps around the kick!)
+            const oct = (inBar % 4 === 2) ? 2 : 1;
+            playRollingBass(c, bus, bar.bass * oct, t, bassBoost);
+          }
+
+          // 3. Hypnotic 16th-note rolling arpeggio pluck
+          if (inBar % 2 === 0 || inBar === 7 || inBar === 15) {
+            const arpFreq = bar.arp[Math.floor(inBar / 2) % bar.arp.length];
+            playTrancePluck(c, echo, arpFreq, t, 0.022, pluckCutoff);
+          }
+
+          // 4. Catchy melodic trance lead hook
+          if (bar.hook[inBar]) {
+            playTrancePluck(c, echo, bar.hook[inBar], t, 0.036, pluckCutoff + 900);
+          }
+
+          // 5. Lush evolving synth pad on bar downbeat
+          if (inBar === 0) {
+            playTrancePad(c, bus, bar.pad, t);
+          }
+
+          // 6. Crisp trance percussion (clap on 2 & 4, offbeat open hats, subtle 16th hats)
+          if (inBar === 4 || inBar === 12) {
+            playPerc(c, bus, t, 'clap');
+          }
+          if (inBar % 4 === 2) {
+            playPerc(c, bus, t, 'openHat');
+          } else if (inBar % 2 === 1) {
+            playPerc(c, bus, t, 'closedHat');
+          }
+        }
+
+        function scheduler() {
+          if (!running || !enabled || SoundFX.isMuted()) return;
+          const c = SoundFX.getContext();
+          if (!c) return;
+          while (nextNoteTime < c.currentTime + 0.14) {
+            scheduleStep(c, step, nextNoteTime);
+            nextNoteTime += STEP_DUR;
+            step = (step + 1) % 128; // 8 full bars (128 16th-note steps)
+          }
+        }
+
+        return {
+          start() {
+            if (!enabled || SoundFX.isMuted() || running) return;
+            const c = SoundFX.getContext();
+            if (!c) return;
+            running = true;
+            nextNoteTime = c.currentTime + 0.05;
+            if (timerId) clearInterval(timerId);
+            timerId = setInterval(scheduler, 40);
+          },
+          stop() {
+            running = false;
+            if (timerId) {
+              clearInterval(timerId);
+              timerId = null;
+            }
+          },
+          toggle() {
+            enabled = !enabled;
+            if (enabled && !SoundFX.isMuted()) {
+              this.start();
+            } else {
+              this.stop();
+            }
+            return enabled;
+          },
+          isEnabled() {
+            return enabled;
+          },
+          syncMute(isMuted) {
+            if (isMuted) {
+              this.stop();
+            } else if (enabled) {
+              this.start();
+            }
+          }
+        };
+      })();
+
+      /* ========================
+         RETRO-CYBERPUNK SYNTHWAVE GRID + SHOCKWAVE CANVAS
+         ======================== */
+      const fxCanvas = document.getElementById('fx-canvas');
+      const fxCtx = fxCanvas.getContext('2d');
+      let embers = [];
+      let bursts = [];
+      let rings = [];
+      let gridOffset = 0;
+      let animFrameId = null;
+
+      function resizeCanvas() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        fxCanvas.width = Math.floor(window.innerWidth * dpr);
+        fxCanvas.height = Math.floor(window.innerHeight * dpr);
+        fxCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function initEmbers() {
+        embers = [];
+        const glyphs = '01ABCDEF#$%';
+        const count = Math.min(38, Math.max(18, Math.floor(window.innerWidth / 34)));
+        for (let i = 0; i < count; i++) {
+          embers.push({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight * 0.72,
+            vy: Math.random() * 0.45 + 0.18,
+            alpha: Math.random() * 0.24 + 0.08,
+            isPink: Math.random() > 0.52,
+            char: glyphs[Math.floor(Math.random() * glyphs.length)],
+            phase: Math.random() * Math.PI * 2
+          });
+        }
+      }
+
+      function spawnBurst(x, y, color, count = 16) {
+        rings.push({
+          x,
+          y,
+          r: 6,
+          maxR: 42 + count * 1.4,
+          alpha: 0.85,
+          color
+        });
+        for (let i = 0; i < count; i++) {
+          const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.35;
+          const speed = Math.random() * 4.2 + 1.5;
+          bursts.push({
+            x,
+            y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            r: Math.random() * 2.4 + 1.1,
+            alpha: 1,
+            decay: Math.random() * 0.024 + 0.02,
+            color
+          });
+        }
+      }
+
+      function drawSynthwaveGrid(w, h) {
+        const horizonY = h * 0.66;
+        const gridH = h - horizonY;
+        gridOffset = (gridOffset + 0.012) % 1;
+
+        fxCtx.save();
+        // Horizon neon glow line
+        const grad = fxCtx.createLinearGradient(0, horizonY, w, horizonY);
+        grad.addColorStop(0, 'rgba(0, 240, 255, 0)');
+        grad.addColorStop(0.25, 'rgba(0, 240, 255, 0.35)');
+        grad.addColorStop(0.5, 'rgba(255, 42, 133, 0.55)');
+        grad.addColorStop(0.75, 'rgba(0, 240, 255, 0.35)');
+        grad.addColorStop(1, 'rgba(0, 240, 255, 0)');
+        fxCtx.strokeStyle = grad;
+        fxCtx.lineWidth = 1.5;
+        fxCtx.beginPath();
+        fxCtx.moveTo(0, horizonY);
+        fxCtx.lineTo(w, horizonY);
+        fxCtx.stroke();
+
+        // Perspective receding vertical lines
+        const centerX = w / 2;
+        const cols = 14;
+        fxCtx.lineWidth = 1;
+        for (let i = -cols; i <= cols; i++) {
+          const ratio = i / cols;
+          const topX = centerX + ratio * (w * 0.28);
+          const botX = centerX + ratio * (w * 1.45);
+          fxCtx.strokeStyle = Math.abs(i) % 2 === 0
+            ? 'rgba(255, 42, 133, 0.14)'
+            : 'rgba(0, 240, 255, 0.11)';
+          fxCtx.beginPath();
+          fxCtx.moveTo(topX, horizonY);
+          fxCtx.lineTo(botX, h);
+          fxCtx.stroke();
+        }
+
+        // Scrolling horizontal perspective lines
+        const rows = 9;
+        for (let r = 0; r < rows; r++) {
+          const t = ((r + gridOffset) / rows);
+          const y = horizonY + Math.pow(t, 2.2) * gridH;
+          const alpha = 0.04 + t * 0.2;
+          fxCtx.strokeStyle = `rgba(255, 42, 133, ${alpha.toFixed(3)})`;
+          fxCtx.beginPath();
+          fxCtx.moveTo(0, y);
+          fxCtx.lineTo(w, y);
+          fxCtx.stroke();
+        }
+        fxCtx.restore();
+      }
+
+      function renderFx() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        fxCtx.clearRect(0, 0, w, h);
+
+        drawSynthwaveGrid(w, h);
+
+        // Subtle falling cyber hex motes
+        fxCtx.font = '11px "Share Tech Mono", monospace';
+        for (let i = 0; i < embers.length; i++) {
+          const p = embers[i];
+          p.y += p.vy;
+          p.phase += 0.03;
+          if (p.y > h * 0.72) {
+            p.y = -12;
+            p.x = Math.random() * w;
+          }
+          const twinkle = p.alpha * (0.65 + 0.35 * Math.sin(p.phase));
+          fxCtx.fillStyle = p.isPink
+            ? `rgba(255, 42, 133, ${twinkle.toFixed(3)})`
+            : `rgba(0, 240, 255, ${twinkle.toFixed(3)})`;
+          fxCtx.fillText(p.char, p.x, p.y);
+        }
+
+        // Expanding neon shockwave rings
+        for (let i = rings.length - 1; i >= 0; i--) {
+          const rg = rings[i];
+          rg.r += (rg.maxR - rg.r) * 0.14;
+          rg.alpha -= 0.035;
+          if (rg.alpha <= 0) {
+            rings.splice(i, 1);
+            continue;
+          }
+          fxCtx.beginPath();
+          fxCtx.arc(rg.x, rg.y, rg.r, 0, Math.PI * 2);
+          fxCtx.strokeStyle = rg.color.replace('ALPHA', rg.alpha.toFixed(3));
+          fxCtx.lineWidth = 1.6;
+          fxCtx.stroke();
+        }
+
+        // Focused laser spark bursts
+        for (let i = bursts.length - 1; i >= 0; i--) {
+          const b = bursts[i];
+          b.x += b.vx;
+          b.y += b.vy;
+          b.vx *= 0.94;
+          b.vy *= 0.94;
+          b.alpha -= b.decay;
+          if (b.alpha <= 0) {
+            bursts.splice(i, 1);
+            continue;
+          }
+          fxCtx.fillStyle = b.color.replace('ALPHA', b.alpha.toFixed(3));
+          fxCtx.fillRect(b.x - b.r / 2, b.y - b.r / 2, b.r, b.r);
+        }
+
+        animFrameId = requestAnimationFrame(renderFx);
+      }
+
+      /* ========================
+         GAME STATE & PERSISTENCE
+         ======================== */
+      const MAX_GUESSES = 10;
+      const WORD_LEN = 5;
+      const MAX_HINTS = 3;
+      const STORAGE_KEY = 'cow_bull_celestial_stats_v1';
+
+      const KB_ROWS = [
+        ['Q','W','E','R','T','Y','U','I','O','P'],
+        ['A','S','D','F','G','H','J','K','L'],
+        ['ENTER','Z','X','C','V','B','N','M','BACK']
+      ];
+
+      let stats = loadStats();
+      let state = {
+        secret: '',
+        guesses: [],         // [{ word: 'CRANE', bulls: 2, cows: 1 }]
+        currentInput: '',
+        gameOver: false,
+        won: false,
+        animating: false,
+        hintsUsed: 0,
+        hintLetters: [],
+        markMode: false,
+        keyNotes: {},        // letter -> 'eliminated' | 'cow' | 'bull'
+        triedLetters: new Set()
+      };
+
+      function loadStats() {
+        const fallback = { played: 0, wins: 0, streak: 0, bestStreak: 0, dist: Array(MAX_GUESSES).fill(0) };
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return fallback;
+          const parsed = JSON.parse(raw);
+          if (!parsed || !Array.isArray(parsed.dist)) return fallback;
+          while (parsed.dist.length < MAX_GUESSES) parsed.dist.push(0);
+          parsed.dist = parsed.dist.slice(0, MAX_GUESSES);
+          return parsed;
+        } catch (e) {
+          return fallback;
+        }
+      }
+
+      function saveStats() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+        } catch (e) {
+          // Ignore storage errors in sandboxed iframes
+        }
+      }
+
+      /* ========================
+         CORE COW & BULL SCORING
+         ======================== */
+      function evaluateGuess(guess, secret) {
+        let bulls = 0;
+        let cows = 0;
+        const secretUsed = [false, false, false, false, false];
+        const guessUsed = [false, false, false, false, false];
+
+        // First pass: exact position matches (Bulls)
+        for (let i = 0; i < WORD_LEN; i++) {
+          if (guess[i] === secret[i]) {
+            bulls++;
+            secretUsed[i] = true;
+            guessUsed[i] = true;
+          }
+        }
+
+        // Second pass: exists in secret word, different position (Cows)
+        for (let i = 0; i < WORD_LEN; i++) {
+          if (guessUsed[i]) continue;
+          for (let j = 0; j < WORD_LEN; j++) {
+            if (!secretUsed[j] && secret[j] === guess[i]) {
+              cows++;
+              secretUsed[j] = true;
+              break;
+            }
+          }
+        }
+
+        return { bulls, cows };
+      }
+
+      /* ========================
+         UI RENDERING HELPERS
+         ======================== */
+      const boardEl = document.getElementById('guess-board');
+      const keyboardEl = document.getElementById('keyboard');
+      const secretSlotsEl = document.getElementById('secret-slots');
+      const attemptPillEl = document.getElementById('attempt-pill');
+      const streakPillEl = document.getElementById('streak-pill');
+      const hintBtnEl = document.getElementById('btn-hint');
+      const hintLabelEl = document.getElementById('hint-label');
+      const hintBannerEl = document.getElementById('hint-banner');
+      const validationBannerEl = document.getElementById('validation-banner');
+      const toastContainer = document.getElementById('toast-container');
+
+      function clearValidationError() {
+        if (validationBannerEl) {
+          validationBannerEl.classList.add('hidden');
+          validationBannerEl.textContent = '';
+        }
+        const errRow = boardEl.querySelector('.guess-row.error-row');
+        if (errRow) errRow.classList.remove('error-row');
+      }
+
+      function showToast(message, isError = false) {
+        const el = document.createElement('div');
+        el.className = 'toast-msg' + (isError ? ' toast-error' : '');
+        el.textContent = message;
+        toastContainer.innerHTML = '';
+        toastContainer.appendChild(el);
+        setTimeout(() => {
+          el.style.transition = 'opacity 0.25s, transform 0.25s';
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(-6px)';
+          setTimeout(() => el.remove(), 260);
+        }, 1800);
+      }
+
+      function buildBoardDOM() {
+        boardEl.innerHTML = '';
+        for (let r = 0; r < MAX_GUESSES; r++) {
+          const row = document.createElement('div');
+          row.className = 'guess-row';
+          row.dataset.row = String(r);
+
+          const num = document.createElement('div');
+          num.className = 'text-xs font-bold text-slate-500 text-center select-none';
+          num.textContent = String(r + 1);
+          row.appendChild(num);
+
+          for (let c = 0; c < WORD_LEN; c++) {
+            const tile = document.createElement('div');
+            tile.className = 'guess-tile';
+            tile.dataset.row = String(r);
+            tile.dataset.col = String(c);
+            row.appendChild(tile);
+          }
+
+          const verdict = document.createElement('div');
+          verdict.className = 'verdict-box';
+          verdict.dataset.verdictRow = String(r);
+          verdict.innerHTML = `<span class="text-[11px] text-slate-600 italic pr-1">—</span>`;
+          row.appendChild(verdict);
+
+          boardEl.appendChild(row);
+        }
+      }
+
+      function buildKeyboardDOM() {
+        keyboardEl.innerHTML = '';
+        KB_ROWS.forEach(rowKeys => {
+          const rowEl = document.createElement('div');
+          rowEl.className = 'kb-row';
+          rowKeys.forEach(key => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.dataset.key = key;
+            btn.className = 'kb-key';
+            if (key === 'ENTER') {
+              btn.classList.add('wide', 'enter-key');
+              btn.textContent = 'ENTER';
+            } else if (key === 'BACK') {
+              btn.classList.add('wide');
+              btn.innerHTML = `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>`;
+              btn.setAttribute('aria-label', 'Backspace');
+            } else {
+              btn.textContent = key;
+            }
+
+            btn.addEventListener('click', () => handleKeyPress(key));
+            if (key.length === 1) {
+              btn.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                cycleKeyNote(key);
+              });
+            }
+            rowEl.appendChild(btn);
+          });
+          keyboardEl.appendChild(rowEl);
+        });
+      }
+
+      function renderVerdictHTML(bulls, cows, animate = false) {
+        const pop = animate ? 'badge-pop' : '';
+        const bullClass = bulls > 0 ? 'badge-bull' : 'badge-zero';
+        const cowClass = cows > 0 ? 'badge-cow' : 'badge-zero';
+        return `
+          <span class="badge-pill ${bullClass} ${pop}" title="${bulls} Bull${bulls === 1 ? '' : 's'} (exact position)">
+            <img src="${BULL_IMG}" alt="Bull" class="w-4 h-4 rounded-full object-cover ${bulls > 0 ? 'ring-1 ring-amber-300' : 'opacity-45 grayscale'}" />
+            <span>${bulls}B</span>
+          </span>
+          <span class="badge-pill ${cowClass} ${pop}" title="${cows} Cow${cows === 1 ? '' : 's'} (wrong position)">
+            <img src="${COW_IMG}" alt="Cow" class="w-4 h-4 rounded-full object-cover ${cows > 0 ? 'ring-1 ring-teal-300' : 'opacity-45 grayscale'}" />
+            <span>${cows}C</span>
+          </span>
+        `;
+      }
+
+      function renderBoard() {
+        const activeIdx = state.guesses.length;
+        for (let r = 0; r < MAX_GUESSES; r++) {
+          const rowEl = boardEl.querySelector(`.guess-row[data-row="${r}"]`);
+          const verdictEl = boardEl.querySelector(`.verdict-box[data-verdict-row="${r}"]`);
+          rowEl.classList.remove('active-row', 'submitted-row', 'winning-row');
+
+          if (r < state.guesses.length) {
+            const g = state.guesses[r];
+            const isWinRow = g.bulls === WORD_LEN;
+            rowEl.classList.add(isWinRow ? 'winning-row' : 'submitted-row');
+            for (let c = 0; c < WORD_LEN; c++) {
+              const tile = rowEl.querySelector(`.guess-tile[data-col="${c}"]`);
+              tile.textContent = g.word[c];
+              tile.className = 'guess-tile ' + (isWinRow ? 'all-bulls' : 'committed');
+            }
+            verdictEl.innerHTML = renderVerdictHTML(g.bulls, g.cows, false);
+          } else if (r === activeIdx && !state.gameOver) {
+            rowEl.classList.add('active-row');
+            for (let c = 0; c < WORD_LEN; c++) {
+              const tile = rowEl.querySelector(`.guess-tile[data-col="${c}"]`);
+              const ch = state.currentInput[c] || '';
+              tile.textContent = ch;
+              tile.className = 'guess-tile';
+              if (ch) tile.classList.add('filled');
+              if (c === state.currentInput.length) tile.classList.add('cursor-focus');
+            }
+            verdictEl.innerHTML = `<span class="text-[11px] text-amber-300/60 font-medium pr-1">Active</span>`;
+          } else {
+            for (let c = 0; c < WORD_LEN; c++) {
+              const tile = rowEl.querySelector(`.guess-tile[data-col="${c}"]`);
+              tile.textContent = '';
+              tile.className = 'guess-tile';
+            }
+            verdictEl.innerHTML = `<span class="text-[11px] text-slate-600 pr-1">—</span>`;
+          }
+        }
+
+        const shownAttempt = Math.min(state.guesses.length + 1, MAX_GUESSES);
+        attemptPillEl.textContent = state.gameOver
+          ? (state.won ? `Solved in ${state.guesses.length}/${MAX_GUESSES}` : 'Vault Locked')
+          : `Guess ${shownAttempt} / ${MAX_GUESSES}`;
+
+        streakPillEl.innerHTML = `Streak: <strong class="text-amber-300">${stats.streak}</strong>`;
+      }
+
+      function renderKeyboardNotes() {
+        const keys = keyboardEl.querySelectorAll('.kb-key[data-key]');
+        keys.forEach(btn => {
+          const k = btn.dataset.key;
+          if (k.length !== 1) return;
+          btn.classList.remove('note-eliminated', 'note-cow', 'note-bull', 'tried-dot');
+          if (state.triedLetters.has(k)) {
+            btn.classList.add('tried-dot');
+          }
+          const note = state.keyNotes[k];
+          if (note === 'eliminated') btn.classList.add('note-eliminated');
+          else if (note === 'cow') btn.classList.add('note-cow');
+          else if (note === 'bull') btn.classList.add('note-bull');
+        });
+      }
+
+      function resetSecretSlots() {
+        const slots = secretSlotsEl.querySelectorAll('.secret-slot');
+        slots.forEach(slot => {
+          slot.textContent = '?';
+          slot.className = 'secret-slot';
+        });
+      }
+
+      function revealSecretSlots(won) {
+        const slots = secretSlotsEl.querySelectorAll('.secret-slot');
+        slots.forEach((slot, idx) => {
+          setTimeout(() => {
+            scrambleText(slot, state.secret[idx], 200);
+            setTimeout(() => {
+              slot.className = 'secret-slot ' + (won ? 'revealed-win' : 'revealed-loss');
+              const rect = slot.getBoundingClientRect();
+              spawnBurst(
+                rect.left + rect.width / 2,
+                rect.top + rect.height / 2,
+                won ? 'rgba(57, 255, 20, ALPHA)' : 'rgba(255, 42, 133, ALPHA)',
+                14
+              );
+            }, 205);
+          }, idx * 105);
+        });
+      }
+
+      /* ========================
+         GAME ACTIONS
+         ======================== */
+      function startNewGame() {
+        let pick = SECRET_WORDS[Math.floor(Math.random() * SECRET_WORDS.length)];
+        if (pick === state.secret && SECRET_WORDS.length > 1) {
+          pick = SECRET_WORDS[(SECRET_WORDS.indexOf(pick) + 7) % SECRET_WORDS.length];
+        }
+
+        state = {
+          secret: pick,
+          guesses: [],
+          currentInput: '',
+          gameOver: false,
+          won: false,
+          animating: false,
+          hintsUsed: 0,
+          hintLetters: [],
+          markMode: false,
+          keyNotes: {},
+          triedLetters: new Set()
+        };
+
+        closeAllModals();
+        resetSecretSlots();
+        hintBtnEl.disabled = false;
+        hintBtnEl.classList.remove('opacity-45', 'pointer-events-none');
+        hintLabelEl.textContent = `Oracle Hint (${MAX_HINTS})`;
+        hintBannerEl.classList.add('hidden');
+        hintBannerEl.textContent = '';
+        clearValidationError();
+        updateMarkModeUI();
+        renderBoard();
+        renderKeyboardNotes();
+      }
+
+      function cycleKeyNote(letter) {
+        const order = [undefined, 'eliminated', 'cow', 'bull'];
+        const cur = state.keyNotes[letter];
+        const next = order[(order.indexOf(cur) + 1) % order.length];
+        if (next) state.keyNotes[letter] = next;
+        else delete state.keyNotes[letter];
+        SoundFX.markNote();
+        renderKeyboardNotes();
+      }
+
+      function updateMarkModeUI() {
+        const dot = document.getElementById('mark-mode-dot');
+        const label = document.getElementById('mark-mode-state');
+        const btn = document.getElementById('btn-mark-mode');
+        const status = document.getElementById('mode-status-text');
+        if (state.markMode) {
+          dot.className = 'w-2 h-2 rounded-full bg-teal-400 animate-pulse';
+          label.textContent = 'ON';
+          btn.classList.add('border-teal-400/70', 'bg-teal-950/60', 'text-teal-200');
+          status.textContent = 'Tap keys to cycle: Out → Cow → Bull';
+        } else {
+          dot.className = 'w-2 h-2 rounded-full bg-slate-400';
+          label.textContent = 'OFF';
+          btn.classList.remove('border-teal-400/70', 'bg-teal-950/60', 'text-teal-200');
+          status.textContent = 'Type or tap letters to guess';
+        }
+      }
+
+      function flashKeyboardKey(key) {
+        const btn = keyboardEl.querySelector(`.kb-key[data-key="${key}"]`);
+        if (!btn) return;
+        btn.classList.remove('key-flash');
+        void btn.offsetWidth;
+        btn.classList.add('key-flash');
+        setTimeout(() => btn.classList.remove('key-flash'), 140);
+      }
+
+      function scrambleText(el, finalChar, durationMs) {
+        const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%';
+        const start = performance.now();
+        el.classList.add('scrambling');
+        function step(now) {
+          if (now - start < durationMs) {
+            el.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+            requestAnimationFrame(step);
+          } else {
+            el.textContent = finalChar;
+            el.classList.remove('scrambling');
+          }
+        }
+        requestAnimationFrame(step);
+      }
+
+      function handleKeyPress(key) {
+        if (state.gameOver || state.animating) return;
+
+        if (key === 'BACK' || key === 'BACKSPACE') {
+          if (state.currentInput.length > 0) {
+            clearValidationError();
+            state.currentInput = state.currentInput.slice(0, -1);
+            SoundFX.backspace();
+            renderBoard();
+          }
+          return;
+        }
+
+        if (key === 'ENTER') {
+          submitGuess();
+          return;
+        }
+
+        if (/^[A-Z]$/.test(key)) {
+          if (state.markMode) {
+            cycleKeyNote(key);
+            return;
+          }
+          if (state.currentInput.length < WORD_LEN) {
+            clearValidationError();
+            const col = state.currentInput.length;
+            state.currentInput += key;
+            SoundFX.keyTap(col);
+            flashKeyboardKey(key);
+            renderBoard();
+            // Focused micro-spark right on the newly filled tile
+            const tile = boardEl.querySelector(`.guess-tile[data-row="${state.guesses.length}"][data-col="${col}"]`);
+            if (tile) {
+              const r = tile.getBoundingClientRect();
+              spawnBurst(r.left + r.width / 2, r.top + r.height / 2, 'rgba(0, 240, 255, ALPHA)', 6);
+            }
+          }
+        }
+      }
+
+      function shakeActiveRow(msg, persistBanner = false) {
+        const rowEl = boardEl.querySelector(`.guess-row[data-row="${state.guesses.length}"]`);
+        if (rowEl) {
+          rowEl.classList.remove('shake', 'error-row');
+          void rowEl.offsetWidth;
+          rowEl.classList.add('shake');
+          if (persistBanner) rowEl.classList.add('error-row');
+        }
+        if (persistBanner && validationBannerEl) {
+          validationBannerEl.textContent = msg;
+          validationBannerEl.classList.remove('hidden');
+        }
+        SoundFX.errorShake();
+        showToast(msg, true);
+      }
+
+      async function submitGuess() {
+        const guess = state.currentInput.toUpperCase();
+        if (guess.length < WORD_LEN) {
+          shakeActiveRow('Enter all 5 letters first');
+          return;
+        }
+        if (state.guesses.some(g => g.word === guess)) {
+          shakeActiveRow('You already tried that word');
+          return;
+        }
+
+        const rowIndex = state.guesses.length;
+        const verdictEl = boardEl.querySelector(`.verdict-box[data-verdict-row="${rowIndex}"]`);
+
+        // Validate against UK English dictionary before accepting the guess
+        state.animating = true;
+        if (verdictEl && !UK_DICTIONARY.has(guess) && !US_ONLY_WORDS.has(guess)) {
+          verdictEl.innerHTML = `<span class="text-[11px] text-teal-300/80 animate-pulse pr-1">Checking…</span>`;
+        }
+
+        const check = await validateUKEnglishWord(guess);
+        if (!check.valid) {
+          state.animating = false;
+          if (verdictEl) {
+            verdictEl.innerHTML = `<span class="text-[11px] text-rose-300 font-semibold pr-1">Invalid</span>`;
+          }
+          shakeActiveRow(check.reason, true);
+          return;
+        }
+
+        clearValidationError();
+        const { bulls, cows } = evaluateGuess(guess, state.secret);
+
+        for (const ch of guess) state.triedLetters.add(ch);
+        state.guesses.push({ word: guess, bulls, cows });
+        state.currentInput = '';
+
+        // Focused laser scanner sweep + sequential cyber-cipher scramble
+        const rowEl = boardEl.querySelector(`.guess-row[data-row="${rowIndex}"]`);
+        const isWin = bulls === WORD_LEN;
+
+        SoundFX.flipSweep();
+
+        const scanner = document.createElement('div');
+        scanner.className = 'row-scanner';
+        rowEl.appendChild(scanner);
+        setTimeout(() => scanner.remove(), 560);
+
+        for (let c = 0; c < WORD_LEN; c++) {
+          const tile = rowEl.querySelector(`.guess-tile[data-col="${c}"]`);
+          const letter = guess[c];
+          setTimeout(() => {
+            scrambleText(tile, letter, 175);
+            setTimeout(() => {
+              tile.className = 'guess-tile flip-anim ' + (isWin ? 'all-bulls' : 'committed');
+            }, 185);
+          }, c * 70);
+        }
+
+        // Reveal Bull & Cow verdict beside the row after tiles flip
+        setTimeout(() => {
+          rowEl.classList.remove('active-row');
+          rowEl.classList.add(isWin ? 'winning-row' : 'submitted-row');
+          verdictEl.innerHTML = renderVerdictHTML(bulls, cows, true);
+
+          const vRect = verdictEl.getBoundingClientRect();
+          if (bulls > 0) {
+            SoundFX.bullChime(bulls);
+            spawnBurst(vRect.left + 26, vRect.top + vRect.height / 2, 'rgba(255, 42, 133, ALPHA)', 10 + bulls * 4);
+          }
+          if (cows > 0) {
+            SoundFX.cowChime(cows, bulls > 0 ? bulls * 0.1 + 0.07 : 0);
+            spawnBurst(vRect.right - 26, vRect.top + vRect.height / 2, 'rgba(0, 240, 255, ALPHA)', 8 + cows * 3);
+          }
+          if (bulls === 0 && cows === 0) {
+            SoundFX.zeroMatch();
+          }
+
+          renderKeyboardNotes();
+
+          if (isWin) {
+            finishGame(true);
+          } else if (state.guesses.length >= MAX_GUESSES) {
+            finishGame(false);
+          } else {
+            state.animating = false;
+            renderBoard();
+          }
+        }, 540);
+      }
+
+      function finishGame(won) {
+        state.gameOver = true;
+        state.won = won;
+        state.animating = false;
+
+        stats.played++;
+        if (won) {
+          stats.wins++;
+          stats.streak++;
+          if (stats.streak > stats.bestStreak) stats.bestStreak = stats.streak;
+          stats.dist[state.guesses.length - 1]++;
+        } else {
+          stats.streak = 0;
+        }
+        saveStats();
+        renderBoard();
+
+        revealSecretSlots(won);
+
+        if (won) {
+          setTimeout(() => {
+            SoundFX.victory();
+            if (typeof window.confetti === 'function') {
+              window.confetti({
+                particleCount: 85,
+                spread: 75,
+                origin: { y: 0.55 },
+                colors: ['#ff2a85', '#00f0ff', '#ffb800', '#39ff14']
+              });
+              setTimeout(() => {
+                window.confetti({
+                  particleCount: 45,
+                  angle: 60,
+                  spread: 55,
+                  origin: { x: 0.1, y: 0.65 },
+                  colors: ['#ff2a85', '#00f0ff', '#ffb800']
+                });
+                window.confetti({
+                  particleCount: 45,
+                  angle: 120,
+                  spread: 55,
+                  origin: { x: 0.9, y: 0.65 },
+                  colors: ['#ff2a85', '#00f0ff', '#ffb800']
+                });
+              }, 240);
+            }
+          }, 320);
+        } else {
+          setTimeout(() => SoundFX.defeat(), 350);
+        }
+
+        // Open End-of-Round Modal
+        setTimeout(() => {
+          const endMedallion = document.getElementById('end-medallion');
+          const endTitle = document.getElementById('end-title');
+          const endSub = document.getElementById('end-subtitle');
+          const endSecret = document.getElementById('end-secret-word');
+
+          endSecret.textContent = state.secret;
+          if (won) {
+            endMedallion.src = BULL_IMG;
+            endMedallion.className = 'w-20 h-20 medallion-gold';
+            endTitle.textContent = 'Cipher Cracked!';
+            endTitle.className = 'font-display text-2xl font-extrabold text-amber-200 tracking-wide mb-1';
+            const n = state.guesses.length;
+            endSub.textContent = n === 1
+              ? 'Unbelievable! 5 Bulls on your very first guess!'
+              : `You deduced all 5 Bulls in ${n} of ${MAX_GUESSES} guesses.`;
+          } else {
+            endMedallion.src = COW_IMG;
+            endMedallion.className = 'w-20 h-20 medallion-teal';
+            endTitle.textContent = 'Vault Sealed';
+            endTitle.className = 'font-display text-2xl font-extrabold text-teal-200 tracking-wide mb-1';
+            endSub.textContent = `All ${MAX_GUESSES} guesses used. Ready to crack a fresh cipher?`;
+          }
+          openModal('modal-end');
+        }, 980);
+      }
+
+      function useOracleHint() {
+        if (state.gameOver || state.hintsUsed >= MAX_HINTS || state.animating) return;
+        // Pick an unrevealed letter from the secret word (preferring ones not already marked as Bull)
+        const unrevealed = state.secret.split('').filter(ch => !state.hintLetters.includes(ch));
+        const preferred = unrevealed.filter(ch => state.keyNotes[ch] !== 'bull');
+        const pool = preferred.length ? preferred : unrevealed;
+        if (!pool.length) return;
+
+        const chosen = pool[Math.floor(Math.random() * pool.length)];
+        state.hintsUsed++;
+        state.hintLetters.push(chosen);
+        if (!state.keyNotes[chosen]) {
+          state.keyNotes[chosen] = 'cow';
+        }
+        renderKeyboardNotes();
+
+        const remaining = MAX_HINTS - state.hintsUsed;
+        if (remaining <= 0) {
+          hintBtnEl.disabled = true;
+          hintBtnEl.classList.add('opacity-45', 'pointer-events-none');
+          hintLabelEl.textContent = 'Hints Used';
+        } else {
+          hintLabelEl.textContent = `Oracle Hint (${remaining})`;
+        }
+
+        const chips = state.hintLetters
+          .map(ch => `<strong class="font-mono-cyber text-pink-300 text-sm px-1.5 py-0.5 mx-0.5 rounded bg-pink-500/20 border border-pink-400/45">${ch}</strong>`)
+          .join('');
+        const label = state.hintLetters.length === 1
+          ? 'Oracle whispers — hidden letter:'
+          : 'Oracle whispers — hidden letters:';
+        hintBannerEl.innerHTML = `${label} ${chips}`;
+        hintBannerEl.classList.remove('hidden');
+
+        SoundFX.hintSparkle();
+        const rect = hintBannerEl.getBoundingClientRect();
+        spawnBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 'rgba(0, 240, 255, ALPHA)', 16);
+      }
+
+      function copyShareSummary() {
+        const header = `COWS & BULLS — ${state.won ? `${state.guesses.length}/${MAX_GUESSES}` : `X/${MAX_GUESSES}`}`;
+        const rows = state.guesses.map((g, i) => `${i + 1}. 🐂 ${g.bulls}B  🐄 ${g.cows}C`);
+        const text = `${header}\n${rows.join('\n')}`;
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text)
+            .then(() => showToast('Result summary copied!'))
+            .catch(() => fallbackCopy(text));
+        } else {
+          fallbackCopy(text);
+        }
+      }
+
+      function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          showToast('Result summary copied!');
+        } catch (e) {
+          showToast('Could not copy summary');
+        }
+        ta.remove();
+      }
+
+      /* ========================
+         MODALS & STATS
+         ======================== */
+      function openModal(id) {
+        if (id === 'modal-stats') renderStatsModal();
+        const el = document.getElementById(id);
+        if (el) el.classList.add('open');
+      }
+
+      function closeAllModals() {
+        document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+      }
+
+      function renderStatsModal() {
+        document.getElementById('stat-played').textContent = String(stats.played);
+        const pct = stats.played > 0 ? Math.round((stats.wins / stats.played) * 100) : 0;
+        document.getElementById('stat-winpct').textContent = `${pct}%`;
+        document.getElementById('stat-streak').textContent = String(stats.streak);
+        document.getElementById('stat-best').textContent = String(stats.bestStreak);
+
+        const maxVal = Math.max(1, ...stats.dist);
+        const distEl = document.getElementById('stat-dist');
+        distEl.innerHTML = '';
+        for (let i = 0; i < MAX_GUESSES; i++) {
+          const count = stats.dist[i];
+          const widthPct = Math.max(10, Math.round((count / maxVal) * 100));
+          const isLatestWin = state.won && state.guesses.length === i + 1;
+          const row = document.createElement('div');
+          row.className = 'flex items-center gap-2';
+          row.innerHTML = `
+            <span class="w-4 text-slate-400 font-bold text-right">${i + 1}</span>
+            <div class="flex-1 bg-slate-900/90 rounded-md overflow-hidden h-5 border border-slate-800">
+              <div class="h-full rounded-md flex items-center justify-end pr-2 font-bold text-[11px] transition-all duration-500 ${
+                isLatestWin
+                  ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950'
+                  : count > 0
+                    ? 'bg-teal-500/45 text-teal-100'
+                    : 'bg-slate-800 text-slate-500'
+              }" style="width: ${count > 0 ? widthPct : 10}%">${count}</div>
+            </div>
+          `;
+          distEl.appendChild(row);
+        }
+      }
+
+      /* ========================
+         EVENT LISTENERS & INIT
+         ======================== */
+      function unlockMusicOnGesture() {
+        RetroMusic.start();
+        window.removeEventListener('pointerdown', unlockMusicOnGesture);
+        window.removeEventListener('keydown', unlockMusicOnGesture);
+      }
+      window.addEventListener('pointerdown', unlockMusicOnGesture);
+      window.addEventListener('keydown', unlockMusicOnGesture);
+
+      document.getElementById('btn-music').addEventListener('click', () => {
+        const isOn = RetroMusic.toggle();
+        document.getElementById('icon-music-on').classList.toggle('hidden', !isOn);
+        document.getElementById('icon-music-off').classList.toggle('hidden', isOn);
+        showToast(isOn ? 'Retro music ON' : 'Retro music OFF');
+      });
+
+      document.getElementById('btn-sound').addEventListener('click', () => {
+        const nextMuted = !SoundFX.isMuted();
+        SoundFX.setMuted(nextMuted);
+        RetroMusic.syncMute(nextMuted);
+        document.getElementById('icon-sound-on').classList.toggle('hidden', nextMuted);
+        document.getElementById('icon-sound-off').classList.toggle('hidden', !nextMuted);
+        if (!nextMuted) SoundFX.markNote();
+        showToast(nextMuted ? 'Sound muted' : 'Sound enabled');
+      });
+
+      document.getElementById('btn-help').addEventListener('click', () => openModal('modal-help'));
+      document.getElementById('btn-stats').addEventListener('click', () => openModal('modal-stats'));
+      document.getElementById('btn-new-game').addEventListener('click', () => {
+        SoundFX.markNote();
+        startNewGame();
+        showToast('New 5-letter cipher ready');
+      });
+
+      document.getElementById('btn-hint').addEventListener('click', useOracleHint);
+
+      document.getElementById('btn-mark-mode').addEventListener('click', () => {
+        state.markMode = !state.markMode;
+        SoundFX.markNote();
+        updateMarkModeUI();
+      });
+
+      document.getElementById('btn-clear-notes').addEventListener('click', () => {
+        state.keyNotes = {};
+        SoundFX.backspace();
+        renderKeyboardNotes();
+        showToast('Letter notes cleared');
+      });
+
+      document.getElementById('btn-share-result').addEventListener('click', copyShareSummary);
+      document.getElementById('btn-play-again').addEventListener('click', () => {
+        SoundFX.markNote();
+        startNewGame();
+      });
+
+      document.querySelectorAll('[data-close-modal]').forEach(btn => {
+        btn.addEventListener('click', closeAllModals);
+      });
+
+      document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+        backdrop.addEventListener('click', (e) => {
+          if (e.target === backdrop) closeAllModals();
+        });
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+        if (document.querySelector('.modal-backdrop.open')) {
+          if (e.key === 'Escape') closeAllModals();
+          if (e.key === 'Enter' && document.getElementById('modal-end').classList.contains('open')) {
+            startNewGame();
+          }
+          return;
+        }
+        const k = e.key.toUpperCase();
+        if (k === 'ENTER') {
+          e.preventDefault();
+          handleKeyPress('ENTER');
+        } else if (k === 'BACKSPACE') {
+          e.preventDefault();
+          handleKeyPress('BACK');
+        } else if (/^[A-Z]$/.test(k)) {
+          if (state.markMode) {
+            state.markMode = false;
+            updateMarkModeUI();
+          }
+          handleKeyPress(k);
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        resizeCanvas();
+        initEmbers();
+      });
+
+      window.onload = function () {
+        resizeCanvas();
+        initEmbers();
+        if (animFrameId) cancelAnimationFrame(animFrameId);
+        renderFx();
+        buildBoardDOM();
+        buildKeyboardDOM();
+        startNewGame();
+      };
+    })();
+  </script>
+</body>
+</html>
