@@ -2,7 +2,7 @@
 
 > *Hey Wordle! who's your daddy?*
 
-A retro-cyberpunk 5-letter word guessing game engineered for crisp 4K clarity across Android & Apple iOS vertical 9:16 portrait phones. Features 10 attempts, English dictionary validation, 3 Oracle Hints, deduction note markers, CRT synth wave visuals, and a melodic retro-trance soundtrack.
+A retro-cyberpunk 5-letter word guessing game engineered for crisp 4K clarity across Android & Apple iOS vertical 9:16 portrait phones (up to 4× Super-Retina DPR) as well as 2K, 2.5K, 3K, 3.5K ultrawide, and 4K UHD desktop monitors. Features 10 attempts, UK English dictionary validation, 3 Oracle Hints, deduction note markers, CRT synthwave visuals, and a procedural 128 BPM melodic retro-trance soundtrack.
 
 ## Deploy to GitHub Pages
 

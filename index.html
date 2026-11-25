@@ -905,6 +905,9 @@
         overflow: hidden;
       }
       #guess-board {
+        display: flex !important;
+        flex-direction: column;
+        gap: 6px;
         flex: 1 1 auto;
         min-height: 0;
         max-height: none !important;
@@ -913,13 +916,19 @@
         padding-right: 2px;
       }
       .guess-row {
-        grid-template-columns: 16px repeat(5, minmax(30px, 1fr)) auto;
+        flex-shrink: 0;
+        min-height: 46px;
+        grid-template-columns: 16px repeat(5, minmax(32px, 1fr)) auto;
         gap: 4px;
-        padding: 5px 6px;
+        padding: 4px 6px;
       }
       .guess-tile {
-        max-width: 46px;
-        font-size: 1.12rem;
+        height: 38px;
+        min-height: 38px;
+        aspect-ratio: auto;
+        max-width: 44px;
+        font-size: 1.2rem;
+        line-height: 1;
       }
       .kb-key {
         height: clamp(40px, 5.4dvh, 48px);
