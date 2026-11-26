@@ -224,6 +224,15 @@
       animation: unlockFlip 0.58s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
 
+    .secret-slot.revealed-hint {
+      background: linear-gradient(145deg, #072a3a, #0e4f68);
+      border-color: var(--neon-cyan);
+      color: #cffafe;
+      text-shadow: 0 0 12px rgba(0, 240, 255, 0.95);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.5), inset 0 0 10px rgba(0, 240, 255, 0.25);
+      animation: unlockFlip 0.52s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
     @keyframes cyberSweep {
       0%, 62% { transform: translateX(-130%); }
       100% { transform: translateX(130%); }
@@ -916,6 +925,42 @@
         padding-top: 0;
       }
     }
+
+    /* Easy / Hard Mode Segmented Toggle */
+    .mode-toggle {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px;
+      border-radius: 8px;
+      background: rgba(8, 4, 22, 0.9);
+      border: 1px solid rgba(157, 78, 221, 0.45);
+      gap: 2px;
+    }
+    .mode-btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 3px 8px;
+      border-radius: 6px;
+      color: #94a3b8;
+      background: transparent;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .mode-btn.active-easy {
+      color: #a5f3fc;
+      background: rgba(0, 240, 255, 0.18);
+      border-color: rgba(0, 240, 255, 0.65);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.28);
+    }
+    .mode-btn.active-hard {
+      color: #fecdd3;
+      background: rgba(255, 42, 133, 0.22);
+      border-color: rgba(255, 42, 133, 0.72);
+      box-shadow: 0 0 10px rgba(255, 42, 133, 0.32);
+    }
   </style>
 </head>
 <body>
@@ -1067,15 +1112,21 @@
             </span>
           </div>
 
-          <button id="btn-hint" type="button"
-            class="font-mono-cyber inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-cyan-500/15 border border-cyan-400/55 text-cyan-200 hover:bg-cyan-500/30 hover:border-cyan-300 shadow-[0_0_10px_rgba(0,240,255,0.2)] transition font-semibold cursor-pointer">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 18h6"></path>
-              <path d="M10 22h4"></path>
-              <path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"></path>
-            </svg>
-            <span id="hint-label">Oracle Hint (3)</span>
-          </button>
+          <div class="flex items-center gap-1.5">
+            <div class="mode-toggle" role="group" aria-label="Difficulty Mode">
+              <button id="btn-mode-easy" type="button" class="mode-btn active-easy" title="Easy Mode: Hints reveal exact letter positions">EASY</button>
+              <button id="btn-mode-hard" type="button" class="mode-btn" title="Hard Mode: Hints reveal letters without positions">HARD</button>
+            </div>
+            <button id="btn-hint" type="button"
+              class="font-mono-cyber inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-cyan-500/15 border border-cyan-400/55 text-cyan-200 hover:bg-cyan-500/30 hover:border-cyan-300 shadow-[0_0_10px_rgba(0,240,255,0.2)] transition font-semibold cursor-pointer">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18h6"></path>
+                <path d="M10 22h4"></path>
+                <path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"></path>
+              </svg>
+              <span id="hint-label">Oracle Hint (3)</span>
+            </button>
+          </div>
         </div>
 
         <div id="hint-banner" class="hidden w-full text-center text-xs text-teal-200 bg-teal-950/60 border border-teal-500/35 rounded-xl py-1.5 px-3"></div>
@@ -1112,7 +1163,7 @@
         <button type="button" data-close-modal="modal-help" class="w-8 h-8 rounded-lg bg-slate-800/80 text-slate-300 hover:text-white flex items-center justify-center cursor-pointer" aria-label="Close">✕</button>
       </div>
       <div class="space-y-3 text-sm text-slate-300 leading-relaxed">
-        <p>Crack the hidden <strong class="text-white">5-letter secret word</strong> (5 unique letters) within <strong class="text-amber-300">10 guesses</strong>. Every guess must be a valid <strong class="text-teal-200">dictionary word</strong>.</p>
+        <p>Crack the hidden <strong class="text-white">5-letter secret word</strong> (5 unique letters) within <strong class="text-amber-300">10 guesses</strong>. Every guess must be a valid <strong class="text-teal-200">dictionary word with 5 unique letters</strong> (no duplicate letters).</p>
         <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-400/30 flex items-center gap-3">
           <img src="assets/bull.jpg" alt="Bull Medallion" class="w-11 h-11 medallion-gold shrink-0" />
           <div>
@@ -2508,6 +2559,18 @@
       const MAX_HINTS = 3;
       const STORAGE_KEY = 'cow_bull_celestial_stats_v1';
       const PROFILE_KEY = 'cow_bull_player_profile_v1';
+      const MODE_KEY = 'cow_bull_difficulty_mode_v1';
+
+      function loadDifficultyMode() {
+        try {
+          const m = localStorage.getItem(MODE_KEY);
+          return m === 'hard' ? 'hard' : 'easy';
+        } catch (e) {
+          return 'easy';
+        }
+      }
+
+      let difficultyMode = loadDifficultyMode();
 
       let currentUser = loadLocalProfile();
       let fbAuth = null;
@@ -2548,6 +2611,7 @@
         won: false,
         animating: false,
         hintsUsed: 0,
+        hintIndices: [],
         hintLetters: [],
         triedLetters: new Set()
       };
@@ -2630,7 +2694,8 @@
                   saveStats();
                 }
               } catch (e) {}
-              updateAccountUI();
+              updateModeUI();
+        updateAccountUI();
               renderBoard();
             }
           });
@@ -2949,6 +3014,7 @@
           won: false,
           animating: false,
           hintsUsed: 0,
+          hintIndices: [],
           hintLetters: [],
           triedLetters: new Set()
         };
@@ -3046,6 +3112,10 @@
         const guess = state.currentInput.toUpperCase();
         if (guess.length < WORD_LEN) {
           shakeActiveRow('Enter all 5 letters first');
+          return;
+        }
+        if (new Set(guess).size < WORD_LEN) {
+          shakeActiveRow('No duplicate letters allowed — use 5 unique letters', true);
           return;
         }
         if (state.guesses.some(g => g.word === guess)) {
@@ -3198,29 +3268,62 @@
             endTitle.textContent = 'Cipher Cracked!';
             endTitle.className = 'font-display text-2xl font-extrabold text-amber-200 tracking-wide mb-1';
             const n = state.guesses.length;
+            const hintSummary = state.hintsUsed === 0
+              ? 'No hints used!'
+              : `${state.hintsUsed} hint${state.hintsUsed === 1 ? '' : 's'} used`;
             endSub.textContent = n === 1
-              ? 'Unbelievable! 5 Bulls on your very first guess!'
-              : `You deduced all 5 Bulls in ${n} of ${MAX_GUESSES} guesses.`;
+              ? `Unbelievable! 5 Bulls on your very first guess! (${hintSummary})`
+              : `Solved in ${n}/${MAX_GUESSES} guesses • ${hintSummary}`;
           } else {
+            const hintSummary = state.hintsUsed === 0
+              ? 'No hints used'
+              : `${state.hintsUsed} hint${state.hintsUsed === 1 ? '' : 's'} used`;
             endMedallion.src = COW_IMG;
             endMedallion.className = 'w-20 h-20 medallion-teal';
             endTitle.textContent = 'Vault Sealed';
             endTitle.className = 'font-display text-2xl font-extrabold text-teal-200 tracking-wide mb-1';
-            endSub.textContent = `All ${MAX_GUESSES} guesses used. Ready to crack a fresh cipher?`;
+            endSub.textContent = `All ${MAX_GUESSES} guesses used • ${hintSummary}`;
           }
           openModal('modal-end');
         }, 980);
       }
 
+      function updateModeUI() {
+        const easyBtn = document.getElementById('btn-mode-easy');
+        const hardBtn = document.getElementById('btn-mode-hard');
+        if (!easyBtn || !hardBtn) return;
+        easyBtn.classList.toggle('active-easy', difficultyMode === 'easy');
+        hardBtn.classList.toggle('active-hard', difficultyMode === 'hard');
+      }
+
+      function setDifficultyMode(mode) {
+        if (mode !== 'easy' && mode !== 'hard') return;
+        if (difficultyMode === mode) return;
+        difficultyMode = mode;
+        try { localStorage.setItem(MODE_KEY, mode); } catch (e) {}
+        updateModeUI();
+        SoundFX.markNote();
+        showToast(mode === 'easy'
+          ? 'Easy Mode: Hints reveal exact positions'
+          : 'Hard Mode: Hints reveal letters only (no positions)');
+      }
+
       function useOracleHint() {
         if (state.gameOver || state.hintsUsed >= MAX_HINTS || state.animating) return;
-        // Pick an unrevealed letter from the secret word
-        const unrevealed = state.secret.split('').filter(ch => !state.hintLetters.includes(ch));
-        if (!unrevealed.length) return;
+        // Pick an unrevealed index (0..4) whose letter hasn't been revealed yet
+        const unrevealedIdx = [];
+        for (let i = 0; i < WORD_LEN; i++) {
+          if (!state.hintIndices.includes(i) && !state.hintLetters.includes(state.secret[i])) {
+            unrevealedIdx.push(i);
+          }
+        }
+        if (!unrevealedIdx.length) return;
 
-        const chosen = unrevealed[Math.floor(Math.random() * unrevealed.length)];
+        const idx = unrevealedIdx[Math.floor(Math.random() * unrevealedIdx.length)];
+        const letter = state.secret[idx];
         state.hintsUsed++;
-        state.hintLetters.push(chosen);
+        state.hintIndices.push(idx);
+        state.hintLetters.push(letter);
 
         const remaining = MAX_HINTS - state.hintsUsed;
         if (remaining <= 0) {
@@ -3231,25 +3334,45 @@
           hintLabelEl.textContent = `Oracle Hint (${remaining})`;
         }
 
-        const chips = state.hintLetters
-          .map(ch => `<strong class="font-mono-cyber text-pink-300 text-sm px-1.5 py-0.5 mx-0.5 rounded bg-pink-500/20 border border-pink-400/45">${ch}</strong>`)
-          .join('');
-        const label = state.hintLetters.length === 1
-          ? 'Oracle whispers — hidden letter:'
-          : 'Oracle whispers — hidden letters:';
-        hintBannerEl.innerHTML = `${label} ${chips}`;
-        hintBannerEl.classList.remove('hidden');
+        if (difficultyMode === 'easy') {
+          // EASY MODE: Decrypt the letter directly in its exact position in the cipher bar
+          const slot = secretSlotsEl.querySelector(`.secret-slot[data-secret-idx="${idx}"]`);
+          if (slot) {
+            scrambleText(slot, letter, 200);
+            setTimeout(() => {
+              slot.textContent = letter;
+              slot.className = 'secret-slot revealed-hint';
+              const rect = slot.getBoundingClientRect();
+              spawnBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 'rgba(0, 240, 255, ALPHA)', 18);
+            }, 205);
+          }
+          hintBannerEl.innerHTML = `Easy Hint — position <strong class="font-mono-cyber text-cyan-300">#${idx + 1}</strong>: <strong class="font-mono-cyber text-pink-300 text-sm px-1.5 py-0.5 rounded bg-pink-500/20 border border-pink-400/45">${letter}</strong>`;
+          hintBannerEl.classList.remove('hidden');
+        } else {
+          // HARD MODE: Reveal random hidden letter(s) without showing position
+          const shuffled = [...state.hintLetters].sort();
+          const chips = shuffled
+            .map(ch => `<strong class="font-mono-cyber text-pink-300 text-sm px-1.5 py-0.5 mx-0.5 rounded bg-pink-500/20 border border-pink-400/45">${ch}</strong>`)
+            .join('');
+          const label = shuffled.length === 1
+            ? 'Hard Hint — hidden letter (random pos):'
+            : 'Hard Hints — hidden letters (random pos):';
+          hintBannerEl.innerHTML = `${label} ${chips}`;
+          hintBannerEl.classList.remove('hidden');
+          const rect = hintBannerEl.getBoundingClientRect();
+          spawnBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 'rgba(255, 42, 133, ALPHA)', 16);
+        }
 
         SoundFX.hintSparkle();
-        const rect = hintBannerEl.getBoundingClientRect();
-        spawnBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 'rgba(0, 240, 255, ALPHA)', 16);
       }
 
       function getShareText() {
-        const header = `COWS & BULLS — ${state.won ? `${state.guesses.length}/${MAX_GUESSES}` : `X/${MAX_GUESSES}`}`;
+        const modeTag = difficultyMode.toUpperCase();
+        const header = `COWS & BULLS [${modeTag}] — ${state.won ? `${state.guesses.length}/${MAX_GUESSES}` : `X/${MAX_GUESSES}`}`;
+        const hintLine = `💡 Hints: ${state.hintsUsed}/${MAX_HINTS}`;
         const rows = state.guesses.map((g, i) => `${i + 1}. 🐂 ${g.bulls}B  🐄 ${g.cows}C`);
         const urlLine = (window.location.href && window.location.href.startsWith('http')) ? `\nPlay: ${window.location.href}` : '';
-        return `${header}\nHey Wordle! who's your daddy?\n${rows.join('\n')}${urlLine}`;
+        return `${header} (${hintLine})\nHey Wordle! who's your daddy?\n${rows.join('\n')}${urlLine}`;
       }
 
       function generateStoryCardBlob() {
@@ -3316,11 +3439,12 @@
           ctx.fillText(statusText, 540, 495);
 
           ctx.fillStyle = '#cbd5e1';
-          ctx.font = '600 30px "Share Tech Mono", monospace';
+          ctx.font = '600 28px "Share Tech Mono", monospace';
+          const modeTag = difficultyMode.toUpperCase();
           ctx.fillText(
             currentUser && currentUser.name
-              ? `PLAYER: ${currentUser.name.toUpperCase()}  •  STREAK: ${stats.streak}`
-              : `CURRENT STREAK: ${stats.streak}`,
+              ? `${currentUser.name.toUpperCase()}  •  ${modeTag}  •  STREAK: ${stats.streak}  •  HINTS: ${state.hintsUsed}/${MAX_HINTS}`
+              : `MODE: ${modeTag}  •  STREAK: ${stats.streak}  •  HINTS: ${state.hintsUsed}/${MAX_HINTS}`,
             540,
             555
           );
@@ -3549,6 +3673,8 @@
         showToast('New 5-letter cipher ready');
       });
 
+      document.getElementById('btn-mode-easy').addEventListener('click', () => setDifficultyMode('easy'));
+      document.getElementById('btn-mode-hard').addEventListener('click', () => setDifficultyMode('hard'));
       document.getElementById('btn-hint').addEventListener('click', useOracleHint);
 
       document.getElementById('btn-account').addEventListener('click', () => {
